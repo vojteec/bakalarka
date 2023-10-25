@@ -169,7 +169,6 @@ void SynthGrannyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     {
         if (m.isNoteOn())
         {
-            Logger::writeToLog("Fungujes?");
             midiNoteInHertz = m.getMidiNoteInHertz(m.getNoteNumber(), 440.0);
             myIsNotePlayed = true;
         }

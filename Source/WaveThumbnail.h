@@ -30,6 +30,8 @@ public:
     String myFileName{ " " };
 
 private:
+    TextButton myLoadButton{ "Naètìte soubor" };
+
     std::vector<float> myAudioPoints;
 
     SynthGrannyAudioProcessor& audioProcessor;

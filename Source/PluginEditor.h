@@ -35,7 +35,6 @@ public:
     void timerCallback() override;
 
 private:
-    TextButton myLoadButton{ "Naètìte soubor" };
 
     WaveThumbnail myWaveThumbnail;
     ADSRComponent myADSR;

@@ -33,6 +33,12 @@ void WaveThumbnail::paint (juce::Graphics& g)
     
     auto waveform = audioProcessor.getWave();
 
+    myLoadButton.onClick = [&]() { audioProcessor.loadFileViaButton();                                                                                   //boolean, ktery rozhoduje, kdy se vykresli waveform je aktivovan
+    repaint(); };                                                                                                //spusti se proces vykreslovani
+    myLoadButton.setColour(TextButton::buttonColourId, Colours::silver);
+    myLoadButton.setColour(TextButton::textColourOffId, Colours::black);
+    addAndMakeVisible(myLoadButton);
+
     if (waveform.getNumSamples() > 0)
     {
         Path p;
@@ -65,6 +71,9 @@ void WaveThumbnail::paint (juce::Graphics& g)
         
         g.setColour(Colours::white);
         g.drawLine(playheadPosition, 0, playheadPosition, getHeight(), 2.0f);
+
+        g.setColour(Colours::grey.darker().withAlpha(0.5f));
+        g.fillRect(0, 0, playheadPosition, getHeight());
     }
     else
     {
@@ -75,7 +84,5 @@ void WaveThumbnail::paint (juce::Graphics& g)
 
 void WaveThumbnail::resized()
 {
-    // This method is where you should set the bounds of any child
-    // components that your component contains..
-
+    myLoadButton.setBoundsRelative(0.01f, 0.01f, 0.08f, 0.025f);
 }
