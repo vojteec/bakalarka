@@ -65,7 +65,7 @@ void WaveThumbnail::paint (juce::Graphics& g)
 
         g.setFont(15.0f);
 
-        g.drawFittedText("Název souboru: "+myFileName, textBounds, Justification::topRight, 1);
+        g.drawFittedText("Soubor: " + myFileName, textBounds, Justification::topRight, 1);
 
         auto playheadPosition = jmap<int>(audioProcessor.getSampleCount(), 0, audioProcessor.getWave().getNumSamples(), 0, getWidth());
         
@@ -77,8 +77,8 @@ void WaveThumbnail::paint (juce::Graphics& g)
     }
     else
     {
-        g.setFont(60.0f);
-        g.drawFittedText("Naètìte soubor metodou drag&drop", textBounds, Justification::centred, 1);
+        g.setFont(40.0f);
+        g.drawFittedText(CharPointer_UTF8("Na\xc4\x8dt\xc4\x9bte soubor metodou drag&drop"), textBounds, Justification::centred, 1);
     }
 }
 

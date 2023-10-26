@@ -233,7 +233,7 @@ void SynthGrannyAudioProcessor::loadFileViaDragNDrop(const String& path)
     BigInteger range;
     range.setRange(0, 128, true);
 
-    myGrannySynth.addSound(new SamplerSound("Sample", *myFormatReader, range, 72, 0.1, 0.1, 60.0));
+    myGrannySynth.addSound(new SamplerSound("Sample", *myFormatReader, range, 72, 0.1, 0.1, 300.0));
 
     updateADSR();
 }
@@ -248,7 +248,6 @@ void SynthGrannyAudioProcessor::loadFileViaButton()
         auto file = chooser.getResult();
 
         //NOT WORKING    NOT WORKING    NOT WORKING    NOT WORKING    NOT WORKING (yet)
-
         /*
         auto myFile = std::make_unique<File>(file);
         myWaveThumbnail.myFileName = myFile->getFileName();
@@ -266,7 +265,7 @@ void SynthGrannyAudioProcessor::loadFileViaButton()
     BigInteger range;
     range.setRange(0, 128, true);
 
-    myGrannySynth.addSound(new SamplerSound("Sample", *myFormatReader, range, 72, 0.1, 0.1, 60.0));
+    myGrannySynth.addSound(new SamplerSound("Sample", *myFormatReader, range, 72, 0.1, 0.1, 300.0));
 
     updateADSR();
 }

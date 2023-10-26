@@ -13,6 +13,15 @@
 SynthGrannyAudioProcessorEditor::SynthGrannyAudioProcessorEditor (SynthGrannyAudioProcessor& p)                                                 //konstruktor editoru
     : AudioProcessorEditor (&p), myWaveThumbnail (p), myADSR(p), audioProcessor (p) 
 {
+    auto happy_grannyImage = ImageCache::getFromMemory(BinaryData::happy_granny_png, BinaryData::happy_granny_pngSize);
+
+    if (! happy_grannyImage.isNull())
+        myImageComponent.setImage(happy_grannyImage, RectanglePlacement::stretchToFit);
+    else
+        jassert(! happy_grannyImage.isNull());
+
+    //addAndMakeVisible(myImageComponent);
+
     startTimerHz(30);
 
     addAndMakeVisible(myWaveThumbnail);
@@ -40,6 +49,7 @@ void SynthGrannyAudioProcessorEditor::resized()
     // subcomponents in your editor..
     myWaveThumbnail.setBoundsRelative(0.2f, 0.05f, 0.6f, 0.55f);
     myADSR.setBoundsRelative(0.0f, 0.65f, 1.0f, 0.35f);
+    myImageComponent.setBoundsRelative(0.0f, 0.0f, 0.2f, 0.51f);
 }
 
 bool SynthGrannyAudioProcessorEditor::isInterestedInFileDrag(const StringArray& files)                                                          //funkce, ktera overi, jestli zvoleny soubor je ve spravnem formatu

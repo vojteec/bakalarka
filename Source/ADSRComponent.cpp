@@ -18,12 +18,12 @@ ADSRComponent::ADSRComponent(SynthGrannyAudioProcessor& p) : audioProcessor (p)
     myAttackSlider.setSliderStyle(Slider::SliderStyle::RotaryVerticalDrag);
     myAttackSlider.setTextBoxStyle(Slider::TextBoxAbove, false, 40, 20);
     myAttackSlider.setColour(Slider::ColourIds::thumbColourId, Colours::lightgreen);
-    myAttackSlider.setColour(Slider::ColourIds::textBoxTextColourId, Colours::black);
+    myAttackSlider.setColour(Slider::ColourIds::textBoxTextColourId, Colours::white);
     addAndMakeVisible(myAttackSlider);
 
     myAttackLabel.setFont(10.0f);
     myAttackLabel.setText("Attack", NotificationType::dontSendNotification);
-    myAttackLabel.setColour(Label::textColourId, Colours::black);
+    myAttackLabel.setColour(Label::textColourId, Colours::white);
     myAttackLabel.setJustificationType(Justification::centredTop);
     myAttackLabel.attachToComponent(&myAttackSlider, false);
 

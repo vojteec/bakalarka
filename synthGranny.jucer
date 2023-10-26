@@ -20,6 +20,10 @@
             file="Source/ADSRComponent.cpp"/>
       <FILE id="pbwXgz" name="ADSRComponent.h" compile="0" resource="0" file="Source/ADSRComponent.h"/>
     </GROUP>
+    <GROUP id="{D7C3E401-7F29-E7E5-3A02-AF0A6016534E}" name="Images&amp;Fonts">
+      <FILE id="AQLdci" name="happy_granny.png" compile="0" resource="1"
+            file="Images&amp;Fonts/happy_granny.png"/>
+    </GROUP>
   </MAINGROUP>
   <MODULES>
     <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
