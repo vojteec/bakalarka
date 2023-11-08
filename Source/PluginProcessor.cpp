@@ -253,7 +253,7 @@ void SynthGrannyAudioProcessor::loadFileViaButton()
         myWaveThumbnail.myFileName = myFile->getFileName();
         */
 
-        myFormatReader = myFormatManager.createReaderFor(file);
+    myFormatReader = myFormatManager.createReaderFor(file);
     }
     else
     {
