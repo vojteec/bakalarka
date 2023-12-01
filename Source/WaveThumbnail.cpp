@@ -27,14 +27,13 @@ void WaveThumbnail::paint (juce::Graphics& g)
 {
 
     g.fillAll(Colours::black);
-    g.setColour(Colours::lightgreen);
 
     auto textBounds = getLocalBounds().reduced(10, 10);
     
     auto waveform = audioProcessor.getWave();
 
-    myLoadButton.onClick = [&]() { audioProcessor.loadFileViaButton();                                                                                   //boolean, ktery rozhoduje, kdy se vykresli waveform je aktivovan
-    repaint(); };                                                                                                //spusti se proces vykreslovani
+    myLoadButton.onClick = [&]() { audioProcessor.loadFileViaButton();                                                                         //boolean, ktery rozhoduje, kdy se vykresli waveform je aktivovan
+    repaint(); };                                                                                                                              //spusti se proces vykreslovani
     myLoadButton.setColour(TextButton::buttonColourId, Colours::silver);
     myLoadButton.setColour(TextButton::textColourOffId, Colours::black);
     addAndMakeVisible(myLoadButton);
@@ -42,7 +41,8 @@ void WaveThumbnail::paint (juce::Graphics& g)
     if (waveform.getNumSamples() > 0)
     {
         Path p;
-        myAudioPoints.clear();                                                                                                                  //stavajici body k vykresleni jsou vymazany
+        myAudioPoints.clear();
+        g.setColour(Colours::green);                                                                                                              //stavajici body k vykresleni jsou vymazany
 
         auto wave = audioProcessor.getWave();                                                                                                   //vlna z procesoru je ziskana a pripravena k ulozeni
         auto ratio = wave.getNumSamples() / getWidth();                                                                                         //vytvoreni pomeru, ve kterem ma byt vlna horizontalne zkreslena
@@ -61,7 +61,9 @@ void WaveThumbnail::paint (juce::Graphics& g)
             p.lineTo(sample, point);                                                                                                            //spojeni bodu carou
         }
 
-        g.strokePath(p, PathStrokeType(2));                                                                                                    //tloustka cary
+        g.strokePath(p, PathStrokeType(1.5));                                                                                                    //tloustka cary
+        g.setColour(Colours::lightgreen);
+        g.fillPath(p);
 
         g.setFont(15.0f);
 
@@ -77,6 +79,7 @@ void WaveThumbnail::paint (juce::Graphics& g)
     }
     else
     {
+        g.setColour(Colours::lightgreen);
         g.setFont(40.0f);
         g.drawFittedText(CharPointer_UTF8("Na\xc4\x8dt\xc4\x9bte soubor metodou drag&drop"), textBounds, Justification::centred, 1);
     }

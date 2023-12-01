@@ -66,6 +66,7 @@ public:
     AudioBuffer<float>& getWave() { return myWave; }
 
     void updateADSR();
+    void granulizeAndShuffle(SamplerSound* samplerSound);
 
     ADSR::Parameters& getADSRParams() { return myADSRParams; }
     AudioProcessorValueTreeState& getValTrSt() { return myValTrSt; }
