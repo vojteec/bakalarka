@@ -98,7 +98,7 @@ načteného souboru<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:Labe
     <node id="n7">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="30.0" width="30.0" x="-352.8686279900008" y="835.0394384734789"/>
+          <y:Geometry height="30.0" width="30.0" x="-352.8686279900008" y="758.7514939808509"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="20" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="28.501953125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="84.01953125" x="-27.009765625" xml:space="preserve" y="34.0">VÝSTUP<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="-0.5" nodeRatioX="0.0" nodeRatioY="0.5" offsetX="0.0" offsetY="4.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
@@ -118,22 +118,21 @@ načteného souboru<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:Labe
       </data>
     </node>
     <node id="n9">
-      <data key="d5"/>
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="199.85582047685818" width="164.39999999999986" x="-420.0686279900007" y="563.2499644201831"/>
+          <y:Geometry height="138.8254648827559" width="164.39999999999986" x="-420.0686279900007" y="563.249964420183"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="20" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="102.0078125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="137.369140625" x="13.515429687499932" xml:space="preserve" y="48.924003988429035">Ekvalizační filtr
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="20" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="102.0078125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="137.369140625" x="13.515429687499932" xml:space="preserve" y="18.40882619137801">Ekvalizační filtr
+ADSR obálka
 Panning
-Delay
 Gain<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="22" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="30.9521484375" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="153.1875" x="168.39999999999986" xml:space="preserve" y="53.9366582226279">Efektová sekce<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="-0.5" labelRatioY="0.0" nodeRatioX="0.5" nodeRatioY="-2.7755575615628914E-16" offsetX="4.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
           <y:Shape type="rectangle"/>
         </y:ShapeNode>
       </data>
     </node>
     <node id="n10">
-      <data key="d5"/>
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="118.60589060308553" width="336.87999999999954" x="-506.30862799000056" y="228.5525801284581"/>
@@ -144,6 +143,7 @@ ADSR obálka
 Rychlost přehrávání
 Hustota grainů
 Počet hlasů<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="22" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="30.9521484375" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="358.6318359375" x="-12.961676124944233" xml:space="preserve" y="-34.9521484375">Úpravy na úrovni jednotlivých grainů<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.5" nodeRatioX="-0.006191397993926651" nodeRatioY="-0.5" offsetX="0.0" offsetY="-4.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
           <y:Shape type="rectangle"/>
         </y:ShapeNode>
       </data>
@@ -178,7 +178,6 @@ Počet hlasů<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel
       </data>
     </edge>
     <edge id="e2" source="n0" target="n3">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -189,7 +188,6 @@ Počet hlasů<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel
       </data>
     </edge>
     <edge id="e3" source="n3" target="n1">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -200,7 +198,6 @@ Počet hlasů<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel
       </data>
     </edge>
     <edge id="e4" source="n4" target="n9">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -211,7 +208,6 @@ Počet hlasů<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel
       </data>
     </edge>
     <edge id="e5" source="n9" target="n7">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -222,7 +218,6 @@ Počet hlasů<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel
       </data>
     </edge>
     <edge id="e6" source="n1" target="n10">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -233,7 +228,6 @@ Počet hlasů<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel
       </data>
     </edge>
     <edge id="e7" source="n10" target="n4">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -244,7 +238,6 @@ Počet hlasů<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel
       </data>
     </edge>
     <edge id="e8" source="n5" target="n10">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -255,7 +248,6 @@ Počet hlasů<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel
       </data>
     </edge>
     <edge id="e9" source="n5" target="n4">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -266,7 +258,6 @@ Počet hlasů<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel
       </data>
     </edge>
     <edge id="e10" source="n5" target="n9">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -277,7 +268,6 @@ Počet hlasů<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel
       </data>
     </edge>
     <edge id="e11" source="n8" target="n10">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -288,7 +278,6 @@ Počet hlasů<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel
       </data>
     </edge>
     <edge id="e12" source="n8" target="n9">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -299,7 +288,6 @@ Počet hlasů<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel
       </data>
     </edge>
     <edge id="e13" source="n8" target="n3">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
