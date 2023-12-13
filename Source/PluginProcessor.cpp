@@ -238,14 +238,14 @@ void SynthGrannyAudioProcessor::loadFileViaDragNDrop(const String& path)
     BigInteger range;
     range.setRange(0, 128, true);
 
-    auto samplerSound = new SamplerSound("Sample", *myFormatReader, range, 72, 0.1, 0.1, 300.0);
+    /*auto samplerSound = */ myGrannySynth.addSound(new SamplerSound("Sample", *myFormatReader, range, 72, 0.1, 0.1, 300.0));
     
-    granulizeAndShuffle(samplerSound);
+    //granulizeAndShuffle(samplerSound);
     updateADSR();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////       TATO METODA SI ŽÁDÁ VELMI DETAILNÍ ROZBOR A ÚPRAVY
-void SynthGrannyAudioProcessor::granulizeAndShuffle(SamplerSound* samplerSound)
+/*void SynthGrannyAudioProcessor::granulizeAndShuffle(SamplerSound* samplerSound)
 {
     AudioBuffer<float>& soundBuffer = *samplerSound->getAudioData();
     const int grainSize = 1024;
@@ -281,7 +281,7 @@ void SynthGrannyAudioProcessor::granulizeAndShuffle(SamplerSound* samplerSound)
     }
 
     myGrannySynth.addSound(samplerSound);
-}
+}*/
 
 void SynthGrannyAudioProcessor::loadFileViaButton()
 {
