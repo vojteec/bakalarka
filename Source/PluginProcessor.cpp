@@ -192,64 +192,11 @@ void SynthGrannyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     // Alternatively, you can process the samples with the channels
     // interleaved by keeping the same state.
 
-
-
-
-
-
-    /*
-    int grainSize = 10240;
-    int channel = 0;
-    auto* channelData = buffer.getWritePointer(channel);
-
-    for (int channel = 0; channel < buffer.getNumChannels(); ++channel)
-    {
-
-        // Generování náhodného zaèátku pro granul
-        std::default_random_engine engine(std::random_device{}());
-        std::uniform_int_distribution<int> distribution(0, buffer.getNumSamples() - grainSize);
-
-        // Náhodný zaèátek prvního granulu
-        int startSample = distribution(engine);
-
-        // Kopírování granulu do výsledného bufferu
-        for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
-        {
-            channelData[sample] = buffer.getReadPointer(channel)[(startSample + sample) % buffer.getNumSamples()];
-        }
-    }
-    */
-    
-    
-
-    
-
-    
-
-    
-
-
     for (int channel = 0; channel < totalNumInputChannels; ++channel) //pùvodnì totalNumInputChannels
     {
         auto* channelData = buffer.getWritePointer (channel);
 
         // ..do something to the data...
-
-
-
-
-
-        
-        
-
-        
-
-
-
-
-
-
-
 
     }
 }
@@ -292,37 +239,12 @@ void SynthGrannyAudioProcessor::loadFileViaDragNDrop(const String& path)
     range.setRange(0, 128, true);
 
     auto samplerSound = new SamplerSound("Sample", *myFormatReader, range, 72, 0.1, 0.1, 300.0);
-    /*
-    // Provádìní granulizace
-    if (samplerSound != nullptr)
-    {
-        AudioBuffer<float>& soundBuffer = *samplerSound->getAudioData();
-        const int grainSize = 10240;
-        std::default_random_engine engine(std::random_device{}());
-        std::uniform_int_distribution<int> distribution(0, soundBuffer.getNumSamples() - grainSize);
-
-        // Náhodné zaèátky pro granuly
-        Array<int> startSamples;
-        for (int i = 0; i < soundBuffer.getNumChannels(); ++i)
-            startSamples.add(distribution(engine));
-
-        // Náhodné pøeskupení granulù
-        for (int channel = 0; channel < soundBuffer.getNumChannels(); ++channel)
-        {
-            float* channelData = soundBuffer.getWritePointer(channel);
-
-            for (int sample = 0; sample < soundBuffer.getNumSamples(); ++sample)
-            {
-                channelData[sample] = soundBuffer.getReadPointer(channel)[(startSamples[channel] + sample) % soundBuffer.getNumSamples()];
-            }
-        }
-    }
-    */
+    
     granulizeAndShuffle(samplerSound);
     updateADSR();
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////       TATO FUNKCE SI ŽÁDÁ VELMI DETAILNÍ ROZBOR A ÚPRAVY
+/////////////////////////////////////////////////////////////////////////////////////////////////       TATO METODA SI ŽÁDÁ VELMI DETAILNÍ ROZBOR A ÚPRAVY
 void SynthGrannyAudioProcessor::granulizeAndShuffle(SamplerSound* samplerSound)
 {
     AudioBuffer<float>& soundBuffer = *samplerSound->getAudioData();
@@ -330,14 +252,14 @@ void SynthGrannyAudioProcessor::granulizeAndShuffle(SamplerSound* samplerSound)
     const int numChannels = soundBuffer.getNumChannels();
     const int numGrains = soundBuffer.getNumSamples() / grainSize;
 
-    // Seznam indexù pro granuly
+    // Seznam indexù pro granule
     Array<int> grainIndices;
     grainIndices.resize(numGrains);
     for (int i = 0; i < numGrains; ++i)
         grainIndices.set(i, i * grainSize);
 
 
-    // Náhodnì seøadí indexy granul pro každý kanál
+    // Náhodnì seøadí indexy granulí pro každý kanál
     std::shuffle(grainIndices.begin(), grainIndices.end(), std::default_random_engine(std::random_device()()));
 
 
@@ -350,11 +272,11 @@ void SynthGrannyAudioProcessor::granulizeAndShuffle(SamplerSound* samplerSound)
         {
             int index = grainIndices[i] * grainSize;
 
-            // Pøidejte vzorky granulu do doèasného bufferu
+            // Pøidání vzorkù granulí do doèasného bufferu
             tempBuffer.copyFrom(0, i * grainSize, soundBuffer, channel, index, grainSize);
         }
 
-        // Zkopírujte doèasný buffer zpìt do pùvodního bufferu
+        // Kopírování doèasného bufferu zpìt do pùvodního bufferu
         soundBuffer.copyFrom(channel, 0, tempBuffer, 0, 0, soundBuffer.getNumSamples());
     }
 
