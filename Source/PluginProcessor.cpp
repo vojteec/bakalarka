@@ -310,11 +310,123 @@ void SynthGrannyAudioProcessor::loadFileViaDragNDrop(const String& path)
 
     auto file = File(path);
     myFormatReader = myFormatManager.createReaderFor(file);
-    
+
     ////////////////////////////////////////////////////////
 
 
 
+
+
+
+    AudioBuffer<float> originalBuffer;
+
+    originalBuffer.setSize(myFormatReader->numChannels, myFormatReader->lengthInSamples);
+    myFormatReader->read(&originalBuffer, 0, myFormatReader->lengthInSamples, 0, true, true);
+    
+    /////prepocet velikosti grainu z ms na pocet vzorku
+
+    float grainLengthInMs = 50;
+    int grainSize = static_cast<int>((grainLengthInMs / 1000) * myFormatReader->sampleRate);
+
+    if (grainSize > originalBuffer.getNumSamples())
+    {
+        grainSize = originalBuffer.getNumSamples();
+    }
+
+    int numChannels = originalBuffer.getNumChannels();
+    
+    int numGrains = static_cast<int>(originalBuffer.getNumSamples() / grainSize) + 1;
+
+    AudioBuffer<float> myGrain;
+    AudioBuffer<float> granulizedBuffer;
+    std::vector<int> tempIdxs;
+
+
+    /////nastaveni velikosti
+
+    for (int i = 0; i < numGrains; i++)
+    {
+        tempIdxs.push_back(i);
+    }
+
+    myGrain.setSize(numChannels, grainSize);
+    granulizedBuffer.setSize(numChannels, numGrains * grainSize);
+
+    /////nastaveni AD obalky pro grain
+
+    float attackInPercent = 50;
+    float decayInPercent = 50;
+    int attackInSamples = static_cast<int>(grainSize * ( attackInPercent / 100));
+    int decayInSamples = static_cast<int>(grainSize * ( decayInPercent / 100));
+
+    int decayStartIdx = grainSize - decayInSamples;
+
+    /////nastaveni prekryti grainu
+
+    //float overlapInPercent = 10.5;
+    //int overlapInSamples = static_cast<int>(grainSize * (overlapInPercent / 100));
+
+    /////cyklus prochazeni a granulizace originalniho bufferu
+
+    int grainIdx = 0;
+    for (int sample = 0; sample < originalBuffer.getNumSamples(); sample++)
+    {
+
+        /////nacteni stereo samplu do transportniho bufferu o velikosti grainu
+
+        for (int channel = 0; channel < numChannels; channel++)
+        {
+            myGrain.setSample(channel, grainIdx, originalBuffer.getSample(channel, sample));
+        }
+        if (grainIdx == grainSize - 1) //pokud je grain plny
+        {
+            /// vyber nahodneho indexu a nacteni do noveho bufferu
+            int removeIdx = rand() % size(tempIdxs);
+            int idx = tempIdxs[removeIdx];
+            tempIdxs.erase(tempIdxs.begin() + removeIdx);
+            for (int channel = 0; channel < numChannels; channel++)
+            {
+                /// aplikace AD obalky
+                myGrain.applyGainRamp(0, attackInSamples, 0.0f, 1.0f);
+                myGrain.applyGainRamp(decayStartIdx, decayInSamples, 1.0f, 0.0f);
+                for (int i = 0; i < grainSize; i++)
+                {
+                    granulizedBuffer.setSample(channel, idx * grainSize + i, myGrain.getSample(channel, i));
+                }
+            }
+            myGrain.clear();
+            grainIdx = 0;
+        }
+        else //pokud grain neni plny
+        {
+            grainIdx++;
+        }
+    }
+    /////sekce pro doplneni zbytku samplu, ktere prebyvaji a nezaplni cely grain
+
+    int diff = grainSize - grainIdx;
+    int lastGrainStartIdx = tempIdxs[0] * grainSize;
+
+    for (int channel = 0; channel < numChannels; channel++)
+    {
+        for (int i = 0; i < grainIdx - 1; i++) //doplneni zbylych vzorku
+        {
+            granulizedBuffer.setSample(channel, lastGrainStartIdx + i, myGrain.getSample(channel, i));
+        }
+        int numMovedSamples = granulizedBuffer.getNumSamples() - lastGrainStartIdx - grainIdx;
+        //posun o rozdil
+        for (int i = 0; i < numMovedSamples; i++)
+        {
+            granulizedBuffer.setSample(channel, lastGrainStartIdx + i, granulizedBuffer.getSample(channel, lastGrainStartIdx + diff + i));
+        }
+    }
+
+
+
+
+
+    //Zaloha original
+    /*
     AudioBuffer<float> originalBuffer;
 
     if (myFormatReader != nullptr)
@@ -383,13 +495,13 @@ void SynthGrannyAudioProcessor::loadFileViaDragNDrop(const String& path)
             granulizedBuffer.setSample(channel, lastGrainStartIdx + i, granulizedBuffer.getSample(channel, lastGrainStartIdx + diff + i));
         }
     }
-
+    */
     /////////////////////
     
     MemoryBlock memoryBlock;
     {
         WavAudioFormat wavFormat;
-        std::unique_ptr<AudioFormatWriter> writer(wavFormat.createWriterFor(new MemoryOutputStream(memoryBlock, false), 48000.0, granulizedBuffer.getNumChannels(), 24, {}, 0));
+        std::unique_ptr<AudioFormatWriter> writer(wavFormat.createWriterFor(new MemoryOutputStream(memoryBlock, false), myFormatReader->sampleRate, granulizedBuffer.getNumChannels(), 24, {}, 0));
 
         if (writer != nullptr)
         {
@@ -401,7 +513,8 @@ void SynthGrannyAudioProcessor::loadFileViaDragNDrop(const String& path)
     std::unique_ptr<AudioFormatReader> reader(wavFormat.createReaderFor(new MemoryInputStream(memoryBlock, false), true));
 
     ////////////////////////
-    readWaveform();
+
+    readWaveform(granulizedBuffer);
 
     BigInteger range;
     range.setRange(0, 128, true);
@@ -431,7 +544,7 @@ void SynthGrannyAudioProcessor::loadFileViaButton()
         return;
     }
 
-    readWaveform();
+    //readWaveform();
 
     BigInteger range;
     range.setRange(0, 128, true);
@@ -441,12 +554,9 @@ void SynthGrannyAudioProcessor::loadFileViaButton()
     updateADSR();
 }
 
-void SynthGrannyAudioProcessor::readWaveform()
+void SynthGrannyAudioProcessor::readWaveform(AudioBuffer<float> granulizedBuffer)  /////////////////////// je potøeba zprovoznit zobrazení obsahu reader, ne myFormatReader
 {
-    auto sampleLength = static_cast<int>(myFormatReader->lengthInSamples);
-
-    myWave.setSize(1, sampleLength);
-    myFormatReader->read(&myWave, 0, sampleLength, 0, true, true);
+    myWave.makeCopyOf(granulizedBuffer, 1);
 }
 
 void SynthGrannyAudioProcessor::updateADSR()

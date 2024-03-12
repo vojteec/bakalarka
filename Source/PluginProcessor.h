@@ -60,7 +60,7 @@ public:
 
     void loadFileViaButton();
     void loadFileViaDragNDrop(const String& path);
-    void readWaveform();
+    void readWaveform(AudioBuffer<float> granulizedBuffer);
 
     int getNumSounds() { return myGrannySynth.getNumSounds(); }
     AudioBuffer<float>& getWave() { return myWave; }
