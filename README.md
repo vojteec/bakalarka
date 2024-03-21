@@ -1,5 +1,4 @@
 # TODO
-## Vojtěch Kuchař
 
 1. Time-stretching v rámci třídy Sampler
 2. Překryv grainů
