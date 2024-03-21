@@ -152,96 +152,21 @@ void SynthGrannyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
-    ////////////////////////////////////////////////////////     NON-ACTIVE
-    //const int numSamplesInBlock = buffer.getNumSamples();
-    //const int numSamplesInFile = fileBuffer.getNumSamples();
-    ////////////////////////////////////////////////////////
-
-
     // In case we have more outputs than inputs, this code clears any output
     // channels that didn't contain input data, (because these aren't
     // guaranteed to be empty - they may contain garbage).
     // This is here to avoid people getting screaming feedback
     // when they first compile a plugin, but obviously you don't need to keep
     // this code if your algorithm always overwrites all the output channels.
+
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
-
-
-
 
     if (myShouldUpdate)
     {
         updateADSR();
     }
     
-    
-    
-    
-    /*         EXPERIMENTÁLNÍ ÈÁST          NON-ACTIVE
-    //////////////////////////////////////////////////////////////// ODTUD PROBIHA GRANULIZACE
-    int grainSize = 1024;
-    int counter = 1;
-    AudioBuffer<float>& granulizedBuffer = buffer;
-
-
-
-    ///////////
-    // Inicializace generátoru náhodných èísel
-    std::srand(static_cast<unsigned>(std::time(0)));
-
-    // Poèet náhodných èísel
-    const int count = buffer.getNumSamples() / grainSize;
-
-    // Horní mez náhodných èísel (napøíklad 100 pro rozsah 0-99)
-    const int upperLimit = buffer.getNumSamples() - grainSize;
-
-    // Vektor pro ukládání již vygenerovaných èísel
-    std::vector<int> generatedNumbers;
-    ///////////
-
-
-
-    for (int i = 0; i < buffer.getNumSamples(); i++)
-    {
-        ///////////////////////////////////////////////////////////////////////
-        int randomNumber;
-        int actualPosition = 0;
-
-        // Cyklus while pro kontrolu unikátnosti vygenerovaného èísla
-        while (true)
-        {
-            randomNumber = std::rand() % upperLimit;
-
-            // Kontrola unikátnosti
-            if (std::find(generatedNumbers.begin(), generatedNumbers.end(), randomNumber) == generatedNumbers.end())
-            {
-                break; // Unikátní èíslo, opustit cyklus
-            }
-        }
-
-        // Pøidání èísla do vektoru
-        generatedNumbers.push_back(randomNumber);
-        ///////////////////////////////////////////////////////////////////////
-
-        float copiedSample = buffer.getSample(0, i);
-        granulizedBuffer.setSample(0, actualPosition, copiedSample);
-        counter++;
-        if (counter == grainSize)
-        {
-            counter = 1;
-            actualPosition = randomNumber * grainSize;
-        }
-        else
-        {
-            actualPosition++;
-        }
-
-    }
-
-    buffer = granulizedBuffer;*/
-
-    ////////////////////////////////////////////////////////////////
     MidiMessage m;
     MidiBuffer::Iterator it( midiMessages );
     int sample;
@@ -263,6 +188,7 @@ void SynthGrannyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     mySampleCount = myIsNotePlayed ? mySampleCount += pitchedSamples : 0;
 
     myGrannySynth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
+
     // This is the place where you'd normally do the guts of your plugin's
     // audio processing...
     // Make sure to reset the state if your inner loop is processing
@@ -270,7 +196,7 @@ void SynthGrannyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     // Alternatively, you can process the samples with the channels
     // interleaved by keeping the same state.
 
-    for (int channel = 0; channel < totalNumInputChannels; ++channel) //pùvodnì totalNumInputChannels
+    for (int channel = 0; channel < totalNumInputChannels; ++channel) //pÃ¹vodnÃ¬ totalNumInputChannels
     {
         auto* channelData = buffer.getWritePointer (channel);
 
@@ -554,7 +480,7 @@ void SynthGrannyAudioProcessor::loadFileViaButton()
     updateADSR();
 }
 
-void SynthGrannyAudioProcessor::readWaveform(AudioBuffer<float> granulizedBuffer)  /////////////////////// je potøeba zprovoznit zobrazení obsahu reader, ne myFormatReader
+void SynthGrannyAudioProcessor::readWaveform(AudioBuffer<float> granulizedBuffer)  /////////////////////// je potÃ¸eba zprovoznit zobrazenÃ­ obsahu reader, ne myFormatReader
 {
     myWave.makeCopyOf(granulizedBuffer, 1);
 }

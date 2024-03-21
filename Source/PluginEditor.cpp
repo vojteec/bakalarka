@@ -13,13 +13,13 @@
 SynthGrannyAudioProcessorEditor::SynthGrannyAudioProcessorEditor (SynthGrannyAudioProcessor& p)                                                 //konstruktor editoru
     : AudioProcessorEditor (&p), myWaveThumbnail (p), myADSR(p), audioProcessor (p) 
 {
-    auto happy_grannyImage = ImageCache::getFromMemory(BinaryData::happy_granny_png, BinaryData::happy_granny_pngSize);
+    /*auto happy_grannyImage = ImageCache::getFromMemory(BinaryData::happy_granny_png, BinaryData::happy_granny_pngSize);
 
     if (! happy_grannyImage.isNull())
         myImageComponent.setImage(happy_grannyImage, RectanglePlacement::stretchToFit);
     else
         jassert(! happy_grannyImage.isNull());
-
+    */
     //addAndMakeVisible(myImageComponent);
 
     startTimerHz(30);
