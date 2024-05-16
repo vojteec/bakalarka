@@ -165,20 +165,25 @@ void SynthGrannyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     if (myShouldUpdate)
     {
         updateADSR();
+        if (originalBuffer.getNumSamples() > 0)
+        {
+            granulisation();
+        }
+        myShouldUpdate = false;
     }
     
-    MidiMessage m;
-    MidiBuffer::Iterator it( midiMessages );
+    MidiMessage message;
+    MidiBuffer::Iterator iterator( midiMessages );
     int sample;
     static double midiNoteInHertz;
-    while (it.getNextEvent(m, sample))
+    while (iterator.getNextEvent(message, sample))
     {
-        if (m.isNoteOn())
+        if (message.isNoteOn())
         {
-            midiNoteInHertz = m.getMidiNoteInHertz(m.getNoteNumber(), 440.0);
+            midiNoteInHertz = message.getMidiNoteInHertz(message.getNoteNumber(), 440.0);
             myIsNotePlayed = true;
         }
-        else if (m.isNoteOff())
+        else if (message.isNoteOff())
         {
             myIsNotePlayed = false;
         }
@@ -189,6 +194,7 @@ void SynthGrannyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
 
     myGrannySynth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
 
+    
     // This is the place where you'd normally do the guts of your plugin's
     // audio processing...
     // Make sure to reset the state if your inner loop is processing
@@ -196,7 +202,7 @@ void SynthGrannyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     // Alternatively, you can process the samples with the channels
     // interleaved by keeping the same state.
 
-    for (int channel = 0; channel < totalNumInputChannels; ++channel) //pùvodnì totalNumInputChannels
+    for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
         auto* channelData = buffer.getWritePointer (channel);
 
@@ -230,6 +236,43 @@ void SynthGrannyAudioProcessor::setStateInformation (const void* data, int sizeI
     // whose contents will have been created by the getStateInformation() call.
 }
 
+void averagePixel(const Image& img)
+{
+    std::vector<Colour> pixelColours;
+    std::vector<float> pixelHue;
+    std::vector<float> pixelSaturation;
+    std::vector<float> pixelLightness;
+
+    //procházíme pixel po pixelu a ukládáme Colour
+    for (int row = 0; row < img.getHeight(); row++)
+    {
+        for (int pixel = 0; pixel < img.getWidth(); pixel++)
+        {
+            pixelColours.push_back(img.getPixelAt(pixel, row));
+        }
+    }
+
+    //procházíme jednotlivé Colours a třídíme parametry do vektorů
+    for (int pixel = 0; pixel < pixelColours.size(); pixel++)
+    {
+        pixelHue.push_back(pixelColours[pixel].getHue());
+        pixelSaturation.push_back(pixelColours[pixel].getSaturationHSL());
+        pixelLightness.push_back(pixelColours[pixel].getLightness());
+    }
+
+    //hledáme průměrnou hodnotu Hue, Saturation a Lightness
+    float averageHue = std::accumulate(pixelHue.begin(), pixelHue.end(), 0.0f) / pixelHue.size();
+    float averageSaturation = std::accumulate(pixelSaturation.begin(), pixelSaturation.end(), 0.0f) / pixelHue.size();
+    float averageLightness = std::accumulate(pixelLightness.begin(), pixelLightness.end(), 0.0f) / pixelLightness.size();
+
+    //dořešit přenos do ValueTreeState
+}
+
+void SynthGrannyAudioProcessor::colourModifier()
+{
+    myCameraDevice->takeStillPicture(averagePixel); //přeneseme se do averagePixel, až se dokončí tato metoda, budeme pracovat zase tady
+}
+
 void SynthGrannyAudioProcessor::loadFileViaDragNDrop(const String& path)
 {
     myGrannySynth.clearSounds();
@@ -243,16 +286,36 @@ void SynthGrannyAudioProcessor::loadFileViaDragNDrop(const String& path)
 
 
 
-
-    AudioBuffer<float> originalBuffer;
-
     originalBuffer.setSize(myFormatReader->numChannels, myFormatReader->lengthInSamples);
     myFormatReader->read(&originalBuffer, 0, myFormatReader->lengthInSamples, 0, true, true);
     
+
+    if (originalBuffer.getNumSamples() > 0)
+    {
+        granulisation();
+    }
+    
+
+
+
+
+
+
+
+    ///////////////////////////////////////////////////////////////////////ODTUD SE BUDE KOPIROVAT
+
+
+}
+
+void SynthGrannyAudioProcessor::granulisation()
+{
     /////prepocet velikosti grainu z ms na pocet vzorku
 
-    float grainLengthInMs = 50;
+    float grainLengthInMs = myValTrSt.getRawParameterValue("GRAIN LENGTH")->load();
     int grainSize = static_cast<int>((grainLengthInMs / 1000) * myFormatReader->sampleRate);
+
+    float overlapInPercent = myValTrSt.getRawParameterValue("GRAIN OVERLAP")->load();
+    int overlapInSamples = static_cast<int>((grainSize / 100) * overlapInPercent);
 
     if (grainSize > originalBuffer.getNumSamples())
     {
@@ -260,37 +323,30 @@ void SynthGrannyAudioProcessor::loadFileViaDragNDrop(const String& path)
     }
 
     int numChannels = originalBuffer.getNumChannels();
-    
+
     int numGrains = static_cast<int>(originalBuffer.getNumSamples() / grainSize) + 1;
 
     AudioBuffer<float> myGrain;
-    AudioBuffer<float> granulizedBuffer;
+    AudioBuffer<float> tempBuffer;
     std::vector<int> tempIdxs;
-
-
-    /////nastaveni velikosti
 
     for (int i = 0; i < numGrains; i++)
     {
         tempIdxs.push_back(i);
     }
 
+    /////nastaveni velikosti
     myGrain.setSize(numChannels, grainSize);
-    granulizedBuffer.setSize(numChannels, numGrains * grainSize);
+    tempBuffer.setSize(numChannels, numGrains * grainSize);
 
     /////nastaveni AD obalky pro grain
 
-    float attackInPercent = 50;
-    float decayInPercent = 50;
-    int attackInSamples = static_cast<int>(grainSize * ( attackInPercent / 100));
-    int decayInSamples = static_cast<int>(grainSize * ( decayInPercent / 100));
+    float attackInPercent = myValTrSt.getRawParameterValue("GRAIN ATTACK")->load();
+    float decayInPercent = myValTrSt.getRawParameterValue("GRAIN DECAY")->load();
+    int attackInSamples = static_cast<int>(grainSize * (attackInPercent / 100));
+    int decayInSamples = static_cast<int>(grainSize * (decayInPercent / 100));
 
     int decayStartIdx = grainSize - decayInSamples;
-
-    /////nastaveni prekryti grainu
-
-    //float overlapInPercent = 10.5;
-    //int overlapInSamples = static_cast<int>(grainSize * (overlapInPercent / 100));
 
     /////cyklus prochazeni a granulizace originalniho bufferu
 
@@ -317,7 +373,7 @@ void SynthGrannyAudioProcessor::loadFileViaDragNDrop(const String& path)
                 myGrain.applyGainRamp(decayStartIdx, decayInSamples, 1.0f, 0.0f);
                 for (int i = 0; i < grainSize; i++)
                 {
-                    granulizedBuffer.setSample(channel, idx * grainSize + i, myGrain.getSample(channel, i));
+                    tempBuffer.setSample(channel, idx * grainSize + i, myGrain.getSample(channel, i));
                 }
             }
             myGrain.clear();
@@ -337,93 +393,81 @@ void SynthGrannyAudioProcessor::loadFileViaDragNDrop(const String& path)
     {
         for (int i = 0; i < grainIdx - 1; i++) //doplneni zbylych vzorku
         {
-            granulizedBuffer.setSample(channel, lastGrainStartIdx + i, myGrain.getSample(channel, i));
+            tempBuffer.setSample(channel, lastGrainStartIdx + i, myGrain.getSample(channel, i));
         }
-        int numMovedSamples = granulizedBuffer.getNumSamples() - lastGrainStartIdx - grainIdx;
+        int numMovedSamples = tempBuffer.getNumSamples() - lastGrainStartIdx - grainIdx;
         //posun o rozdil
         for (int i = 0; i < numMovedSamples; i++)
         {
-            granulizedBuffer.setSample(channel, lastGrainStartIdx + i, granulizedBuffer.getSample(channel, lastGrainStartIdx + diff + i));
+            tempBuffer.setSample(channel, lastGrainStartIdx + i, tempBuffer.getSample(channel, lastGrainStartIdx + diff + i));
         }
     }
 
+    /////////////////////////PREKRYTI
 
-
-
-
-    //Zaloha original
-    /*
-    AudioBuffer<float> originalBuffer;
-
-    if (myFormatReader != nullptr)
-    {
-        originalBuffer.setSize(myFormatReader->numChannels, myFormatReader->lengthInSamples);
-        myFormatReader->read(&originalBuffer, 0, myFormatReader->lengthInSamples, 0, true, true);
-    }
-    
-    int grainSize = 1024;
-    int numChannels = originalBuffer.getNumChannels();
-    int numGrains = static_cast<int>(originalBuffer.getNumSamples() / grainSize) + 1;
-    AudioBuffer<float> myGrain;
     AudioBuffer<float> granulizedBuffer;
-    std::vector<int> tempIdxs;
-    
-    /////nastaveni velikosti
-    
-        for (int i = 0; i < numGrains; i++)
-        {
-            tempIdxs.push_back(i);
-        }
-    
-    myGrain.setSize(numChannels, grainSize);
-    granulizedBuffer.setSize(numChannels, numGrains*grainSize);
-   
-    int grainIdx = 0;
-    for (int sample = 0; sample < originalBuffer.getNumSamples(); sample++)
-    {
-        for (int channel = 0; channel < numChannels; channel++)
-        {
-            myGrain.setSample(channel, grainIdx, originalBuffer.getSample(channel, sample));
-        }
-        if (grainIdx == grainSize - 1)
-        {
-            int removeIdx = rand() % size(tempIdxs);
-            int idx = tempIdxs[removeIdx];
-            tempIdxs.erase(tempIdxs.begin() + removeIdx);
-            for (int channel = 0; channel < numChannels; channel++)
-            {
-                for (int i = 0; i < grainSize; i++)
-                {
-                    granulizedBuffer.setSample(channel, idx * grainSize + i, myGrain.getSample(channel, i));
-                }
-            }
-            myGrain.clear();
-            grainIdx = 0;
-        }
-        else
-        {
-            grainIdx++;
-        }
-    }
-    int diff = grainSize - grainIdx;
-    int lastGrainStartIdx = tempIdxs[0] * grainSize;
+    granulizedBuffer.setSize(tempBuffer.getNumChannels(), numGrains * grainSize - (numGrains - 1) * overlapInSamples);
 
-    for (int channel = 0; channel < numChannels; channel++)
+    int notOverlappedSamples = grainSize - 2 * overlapInSamples;
+    for (int channel = 0; channel < granulizedBuffer.getNumChannels(); channel++)
     {
-        for (int i = 0; i < grainIdx - 1; i++) //doplneni zbylych vzorku
+        int granulizedBufferSampleIdx = 0;
+
+        for (int grainNumber = 0; grainNumber < numGrains; grainNumber++) //projdi postupne vsechny grainy
         {
-            granulizedBuffer.setSample(channel, lastGrainStartIdx + i, myGrain.getSample(channel, i));
-        }
-        int numMovedSamples = granulizedBuffer.getNumSamples() - lastGrainStartIdx - grainIdx;
-        //posun o rozdil
-        for (int i = 0; i < numMovedSamples; i++)
-        {
-            granulizedBuffer.setSample(channel, lastGrainStartIdx + i, granulizedBuffer.getSample(channel, lastGrainStartIdx + diff + i));
+            for (int sampleInGrainIdx = 0; sampleInGrainIdx < grainSize; sampleInGrainIdx++) //projdi vsechny vzorky v grainu
+            {
+                if (grainNumber == 0) //prvni grain (nechceme prekryti na zacatku)
+                {
+                    if (sampleInGrainIdx < grainSize - overlapInSamples) //vsechny grainy do prekryti, pouze je prepis tak jak jsou
+                    {
+                        granulizedBuffer.setSample(channel, granulizedBufferSampleIdx, tempBuffer.getSample(channel, grainNumber * grainSize + sampleInGrainIdx));
+                        granulizedBufferSampleIdx++;
+                        continue;
+                    }
+                    //vzorky zasazene prekrytim se prumeruji se zacatkem dalsiho grainu
+                    float average = (tempBuffer.getSample(channel, grainNumber * grainSize + sampleInGrainIdx) + tempBuffer.getSample(channel, (grainNumber + 1) * grainSize + sampleInGrainIdx - overlapInSamples - notOverlappedSamples)) / 2;
+                    //float addition = tempBuffer.getSample(channel, grainNumber * grainSize + sampleInGrainIdx) + tempBuffer.getSample(channel, (grainNumber + 1) * grainSize + sampleInGrainIdx - overlapInSamples - notOverlappedSamples);
+                    //a zapisuji
+                    granulizedBuffer.setSample(channel, granulizedBufferSampleIdx, average);
+                    granulizedBufferSampleIdx++;
+                    continue;
+                }
+                if (grainNumber == numGrains - 1) //zde zpracovavame posledni grain 
+                {
+                    if (sampleInGrainIdx < overlapInSamples) //prekryti ze zacatku preskakujeme, protoze uz bylo vyreseno v predposlednim grainu
+                    {
+                        continue;
+                    }
+                    granulizedBuffer.setSample(channel, granulizedBufferSampleIdx, tempBuffer.getSample(channel, grainNumber * grainSize + sampleInGrainIdx)); //ostatni vzorky zapiseme jak jsou
+                    granulizedBufferSampleIdx++;
+                    continue;
+                }
+                //grain, ktery neni prvni nebo posledni
+                if (sampleInGrainIdx < overlapInSamples) //preskakujeme zacatek grainu, uz je vyreseny
+                {
+                    continue;
+                }
+                if (sampleInGrainIdx < grainSize - overlapInSamples) //grainy, ktere jsou mimo prekryti, zapisujeme tak jak jsou
+                {
+                    granulizedBuffer.setSample(channel, granulizedBufferSampleIdx, tempBuffer.getSample(channel, grainNumber * grainSize + sampleInGrainIdx));
+                    granulizedBufferSampleIdx++;
+                    continue;
+                }
+                //pro prekryti na konci zase udelame prumer poslednich vzorku n-teho grainu a prvnich vzorku n+1 grainu
+                float average = (tempBuffer.getSample(channel, grainNumber * grainSize + sampleInGrainIdx) + tempBuffer.getSample(channel, (grainNumber + 1) * grainSize + sampleInGrainIdx - overlapInSamples - notOverlappedSamples)) / 2;
+                //float addition = tempBuffer.getSample(channel, grainNumber * grainSize + sampleInGrainIdx) + tempBuffer.getSample(channel, (grainNumber + 1) * grainSize + sampleInGrainIdx - overlapInSamples - notOverlappedSamples);
+
+                granulizedBuffer.setSample(channel, granulizedBufferSampleIdx, average);
+                granulizedBufferSampleIdx++;
+            }
         }
     }
-    */
-    /////////////////////
-    
+
+    //APLIKACE FADE-IN A FADE-OUT PRO REDUKCI PRASKÁNÍ PŘI LOOPINGU
+    granulizedBuffer.applyGainRamp(0, 1200, 0.0f, 1.0f);
+    granulizedBuffer.applyGainRamp(granulizedBuffer.getNumSamples() - 1201, 1200, 1.0f, 0.0f);
+
     MemoryBlock memoryBlock;
     {
         WavAudioFormat wavFormat;
@@ -452,6 +496,7 @@ void SynthGrannyAudioProcessor::loadFileViaButton()
 {
     myGrannySynth.clearSounds();
 
+    AudioBuffer<float> tempBuffer;
     FileChooser chooser{ "Vyberte soubor", {}, "*.wav;*.flac;*.aiff;*.wma;*.ogg"};
     if (chooser.browseForFileToOpen())
     {
@@ -463,14 +508,17 @@ void SynthGrannyAudioProcessor::loadFileViaButton()
         myWaveThumbnail.myFileName = myFile->getFileName();
         */
 
-    myFormatReader = myFormatManager.createReaderFor(file);
+        myFormatReader = myFormatManager.createReaderFor(file);
     }
     else
     {
         return;
     }
 
-    //readWaveform();
+    tempBuffer.setSize(myFormatReader->numChannels, myFormatReader->lengthInSamples);
+    myFormatReader->read(&tempBuffer, 0, myFormatReader->lengthInSamples, 0, true, true);
+
+    readWaveform(tempBuffer);
 
     BigInteger range;
     range.setRange(0, 128, true);
@@ -480,9 +528,9 @@ void SynthGrannyAudioProcessor::loadFileViaButton()
     updateADSR();
 }
 
-void SynthGrannyAudioProcessor::readWaveform(AudioBuffer<float> granulizedBuffer)  /////////////////////// je potøeba zprovoznit zobrazení obsahu reader, ne myFormatReader
+void SynthGrannyAudioProcessor::readWaveform(AudioBuffer<float> tempBuffer)
 {
-    myWave.makeCopyOf(granulizedBuffer, 1);
+    myWave.makeCopyOf(tempBuffer, 1);
 }
 
 void SynthGrannyAudioProcessor::updateADSR()
@@ -510,6 +558,10 @@ AudioProcessorValueTreeState::ParameterLayout SynthGrannyAudioProcessor::createP
     parameters.push_back(std::make_unique<AudioParameterFloat>("SUSTAIN", "Sustain", 0.0f, 1.0f, 1.0f));
     parameters.push_back(std::make_unique<AudioParameterFloat>("RELEASE", "Release", 0.0f, 10.0f, 2.0f));
 
+    parameters.push_back(std::make_unique<AudioParameterFloat>("GRAIN LENGTH", "Length", 0.1f, 100.0f, 50.0f));
+    parameters.push_back(std::make_unique<AudioParameterFloat>("GRAIN ATTACK", "Attack", 0.0f, 100.0f, 50.0f));
+    parameters.push_back(std::make_unique<AudioParameterFloat>("GRAIN DECAY", "Decay", 0.0f, 100.0f, 50.0f));
+    parameters.push_back(std::make_unique<AudioParameterFloat>("GRAIN OVERLAP", "Overlap", 0.0f, 50.0f, 0.0f));
 
     return{ parameters.begin(), parameters.end() };
 }

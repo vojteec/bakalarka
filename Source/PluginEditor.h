@@ -12,6 +12,7 @@
 #include "PluginProcessor.h"
 #include "WaveThumbnail.h"
 #include "ADSRComponent.h"
+#include "GrainComponent.h"
 
 //==============================================================================
 /**
@@ -34,8 +35,11 @@ public:
     void timerCallback() override;
 
 private:
+    TextButton myWebcamButton{ CharPointer_UTF8("Nastavit parametry dle dat z webkamery") };
+
     WaveThumbnail myWaveThumbnail;
     ADSRComponent myADSR;
+    GrainComponent myGrainComponent;
     ImageComponent myImageComponent;
 
     SynthGrannyAudioProcessor& audioProcessor;

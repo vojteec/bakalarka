@@ -11,7 +11,7 @@
 
 //==============================================================================
 SynthGrannyAudioProcessorEditor::SynthGrannyAudioProcessorEditor (SynthGrannyAudioProcessor& p)                                                 //konstruktor editoru
-    : AudioProcessorEditor (&p), myWaveThumbnail (p), myADSR(p), audioProcessor (p) 
+    : AudioProcessorEditor (&p), myWaveThumbnail (p), myADSR(p), myGrainComponent(p), audioProcessor (p) 
 {
     /*auto happy_grannyImage = ImageCache::getFromMemory(BinaryData::happy_granny_png, BinaryData::happy_granny_pngSize);
 
@@ -22,12 +22,21 @@ SynthGrannyAudioProcessorEditor::SynthGrannyAudioProcessorEditor (SynthGrannyAud
     */
     //addAndMakeVisible(myImageComponent);
 
-    startTimerHz(30);
+    startTimerHz(30);                                       //nastaveni velikosti okna
+
+    myWebcamButton.onClick = [&]() { audioProcessor.colourModifier();                                                                         //boolean, ktery rozhoduje, kdy se vykresli waveform je aktivovan
+    repaint(); };                                                                                                                              //spusti se proces vykreslovani
+    myWebcamButton.setColour(TextButton::buttonColourId, Colours::silver);
+    myWebcamButton.setColour(TextButton::textColourOffId, Colours::black);
+    addAndMakeVisible(myWebcamButton);
 
     addAndMakeVisible(myWaveThumbnail);
+    addAndMakeVisible(myGrainComponent);
     addAndMakeVisible(myADSR);
-    setSize (1000, 400);                                                                                                                        //nastaveni velikosti okna
+
+    setSize(1080, 720);
 }
+
 
 SynthGrannyAudioProcessorEditor::~SynthGrannyAudioProcessorEditor()                                                                             //destruktor editoru
 {
@@ -47,9 +56,11 @@ void SynthGrannyAudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
-    myWaveThumbnail.setBoundsRelative(0.2f, 0.05f, 0.6f, 0.55f);
-    myADSR.setBoundsRelative(0.0f, 0.65f, 1.0f, 0.35f);
-    myImageComponent.setBoundsRelative(0.0f, 0.0f, 0.2f, 0.51f);
+    myWebcamButton.setBoundsRelative(0.01f, 0.01f, 0.08f, 0.025f);
+    myWaveThumbnail.setBoundsRelative(0.1f, 0.05f, 0.8f, 0.45f);
+    myADSR.setBoundsRelative(0.5f, 0.65f, 0.4f, 0.3f);
+    myGrainComponent.setBoundsRelative(0.1f, 0.65f, 0.3f, 0.3f);
+    myImageComponent.setBoundsRelative(0.0f, 0.0f, 0.2f, 0.2f);
 }
 
 bool SynthGrannyAudioProcessorEditor::isInterestedInFileDrag(const StringArray& files)                                                          //funkce, ktera overi, jestli zvoleny soubor je ve spravnem formatu

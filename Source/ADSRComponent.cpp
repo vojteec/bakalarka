@@ -22,7 +22,7 @@ ADSRComponent::ADSRComponent(SynthGrannyAudioProcessor& p) : audioProcessor (p)
     addAndMakeVisible(myAttackSlider);
 
     myAttackLabel.setFont(10.0f);
-    myAttackLabel.setText("Attack", NotificationType::dontSendNotification);
+    myAttackLabel.setText("Attack (s)", NotificationType::dontSendNotification);
     myAttackLabel.setColour(Label::textColourId, Colours::white);
     myAttackLabel.setJustificationType(Justification::centredTop);
     myAttackLabel.attachToComponent(&myAttackSlider, false);
@@ -36,7 +36,7 @@ ADSRComponent::ADSRComponent(SynthGrannyAudioProcessor& p) : audioProcessor (p)
     addAndMakeVisible(myDecaySlider);
 
     myDecayLabel.setFont(10.0f);
-    myDecayLabel.setText("Decay", NotificationType::dontSendNotification);
+    myDecayLabel.setText("Decay (s)", NotificationType::dontSendNotification);
     myDecayLabel.setJustificationType(Justification::centredTop);
     myDecayLabel.attachToComponent(&myDecaySlider, false);
 
@@ -49,7 +49,7 @@ ADSRComponent::ADSRComponent(SynthGrannyAudioProcessor& p) : audioProcessor (p)
     addAndMakeVisible(mySustainSlider);
 
     mySustainLabel.setFont(10.0f);
-    mySustainLabel.setText("Sustain", NotificationType::dontSendNotification);
+    mySustainLabel.setText("Sustain (%)", NotificationType::dontSendNotification);
     mySustainLabel.setJustificationType(Justification::centredTop);
     mySustainLabel.attachToComponent(&mySustainSlider, false);
 
@@ -62,7 +62,7 @@ ADSRComponent::ADSRComponent(SynthGrannyAudioProcessor& p) : audioProcessor (p)
     addAndMakeVisible(myReleaseSlider);
 
     myReleaseLabel.setFont(10.0f);
-    myReleaseLabel.setText("Release", NotificationType::dontSendNotification);
+    myReleaseLabel.setText("Release (s)", NotificationType::dontSendNotification);
     myReleaseLabel.setJustificationType(Justification::centredTop);
     myReleaseLabel.attachToComponent(&myReleaseSlider, false);
 
@@ -81,9 +81,9 @@ void ADSRComponent::paint (juce::Graphics& g)
 
 void ADSRComponent::resized()
 {
-    const auto startX = 0.6f;
+    const auto startX = 0.2f;
     const auto startY = 0.2f;
-    const auto compWidth = 0.1f;
+    const auto compWidth = 0.2f;
     const auto compHeight = 0.75f;
 
     myAttackSlider.setBoundsRelative(startX, startY, compWidth, compHeight);

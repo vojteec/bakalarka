@@ -30,7 +30,7 @@ public:
     String myFileName{ " " };
 
 private:
-    TextButton myLoadButton{ CharPointer_UTF8("Najd\xc4\x9bte soubor") };
+    TextButton myLoadButton{ CharPointer_UTF8("Na\xc4\x8dt\xc4\x9bte soubor do sampleru bez granulizace") };
 
     std::vector<float> myAudioPoints;
 

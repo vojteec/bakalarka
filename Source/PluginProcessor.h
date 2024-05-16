@@ -9,12 +9,14 @@
 #pragma once
 
 #include <JuceHeader.h>
+//#include <juce_video/juce_video.h>
+//#include <juce_video/capture/juce_CameraDevice.h>
 using namespace juce;
 
 //==============================================================================
 /**
 */
-class SynthGrannyAudioProcessor : public juce::AudioProcessor,
+class SynthGrannyAudioProcessor : public AudioProcessor,
                                   public ValueTree::Listener
 #if JucePlugin_Enable_ARA
     , public juce::AudioProcessorARAExtension
@@ -58,33 +60,45 @@ public:
     void getStateInformation(juce::MemoryBlock& destData) override;
     void setStateInformation(const void* data, int sizeInBytes) override;
 
+    void colourModifier();
+
     void loadFileViaButton();
     void loadFileViaDragNDrop(const String& path);
+    void granulisation();
     void readWaveform(AudioBuffer<float> granulizedBuffer);
 
     int getNumSounds() { return myGrannySynth.getNumSounds(); }
     AudioBuffer<float>& getWave() { return myWave; }
 
     void updateADSR();
+    //void updateGrain();
 
     ADSR::Parameters& getADSRParams() { return myADSRParams; }
+    //GrainComponent::Parameters& getGrainParams() { return myGrainParams; } //????????????????
     AudioProcessorValueTreeState& getValTrSt() { return myValTrSt; }
 
     std::atomic<bool>& isNotePlayed() { return myIsNotePlayed; }
     std::atomic<int>& getSampleCount() { return mySampleCount; }
+
 
 private:
     Synthesiser myGrannySynth;
     const int myNumVoices{ 16 };
     AudioBuffer<float> myWave;
 
+    AudioBuffer<float> originalBuffer;
+
     ADSR::Parameters myADSRParams;
+    //Grain::Parameters myGrainParams; //????????????????
+
+    CameraDevice* myCameraDevice = CameraDevice::openDevice(0);
 
     AudioFormatManager myFormatManager;
     AudioFormatReader* myFormatReader{ nullptr };
 
-    AudioProcessorValueTreeState myValTrSt;
-    AudioProcessorValueTreeState::ParameterLayout createParams();
+    AudioProcessorValueTreeState myValTrSt;                         
+    AudioProcessorValueTreeState::ParameterLayout createParams();   
+
     void valueTreePropertyChanged(ValueTree& treeWhosePropertyHasChanged, const Identifier& property) override;
 
     std::atomic<bool> myShouldUpdate{ false };
