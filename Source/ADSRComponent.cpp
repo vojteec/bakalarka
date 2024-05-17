@@ -16,7 +16,7 @@ ADSRComponent::ADSRComponent(SynthGrannyAudioProcessor& p) : audioProcessor (p)
 {
     //Attack
     myAttackSlider.setSliderStyle(Slider::SliderStyle::RotaryVerticalDrag);
-    myAttackSlider.setTextBoxStyle(Slider::TextBoxAbove, false, 40, 20);
+    myAttackSlider.setTextBoxStyle(Slider::TextBoxBelow, false, 40, 20);
     myAttackSlider.setColour(Slider::ColourIds::thumbColourId, Colours::lightgreen);
     myAttackSlider.setColour(Slider::ColourIds::textBoxTextColourId, Colours::white);
     addAndMakeVisible(myAttackSlider);
@@ -31,7 +31,7 @@ ADSRComponent::ADSRComponent(SynthGrannyAudioProcessor& p) : audioProcessor (p)
 
     //Decay
     myDecaySlider.setSliderStyle(Slider::SliderStyle::RotaryVerticalDrag);
-    myDecaySlider.setTextBoxStyle(Slider::TextBoxAbove, false, 40, 20);
+    myDecaySlider.setTextBoxStyle(Slider::TextBoxBelow, false, 40, 20);
     myDecaySlider.setColour(Slider::ColourIds::thumbColourId, Colours::lightgreen.darker());
     addAndMakeVisible(myDecaySlider);
 
@@ -44,7 +44,7 @@ ADSRComponent::ADSRComponent(SynthGrannyAudioProcessor& p) : audioProcessor (p)
 
     //Sustain
     mySustainSlider.setSliderStyle(Slider::SliderStyle::RotaryVerticalDrag);
-    mySustainSlider.setTextBoxStyle(Slider::TextBoxAbove, false, 40, 20);
+    mySustainSlider.setTextBoxStyle(Slider::TextBoxBelow, false, 40, 20);
     mySustainSlider.setColour(Slider::ColourIds::thumbColourId, Colours::lightgreen.darker().darker());
     addAndMakeVisible(mySustainSlider);
 
@@ -57,7 +57,7 @@ ADSRComponent::ADSRComponent(SynthGrannyAudioProcessor& p) : audioProcessor (p)
 
     //Release
     myReleaseSlider.setSliderStyle(Slider::SliderStyle::RotaryVerticalDrag);
-    myReleaseSlider.setTextBoxStyle(Slider::TextBoxAbove, false, 40, 20);
+    myReleaseSlider.setTextBoxStyle(Slider::TextBoxBelow, false, 40, 20);
     myReleaseSlider.setColour(Slider::ColourIds::thumbColourId, Colours::lightgreen.darker().darker().darker());
     addAndMakeVisible(myReleaseSlider);
 

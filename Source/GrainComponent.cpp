@@ -16,7 +16,7 @@ GrainComponent::GrainComponent(SynthGrannyAudioProcessor& p) : audioProcessor(p)
 {
     //Grain length
     myGrainLengthSlider.setSliderStyle(Slider::SliderStyle::RotaryVerticalDrag);
-    myGrainLengthSlider.setTextBoxStyle(Slider::TextBoxAbove, false, 40, 20);
+    myGrainLengthSlider.setTextBoxStyle(Slider::TextBoxBelow, false, 40, 20);
     myGrainLengthSlider.setColour(Slider::ColourIds::thumbColourId, Colours::lightgreen);
     myGrainLengthSlider.setColour(Slider::ColourIds::textBoxTextColourId, Colours::white);
     addAndMakeVisible(myGrainLengthSlider);
@@ -31,7 +31,7 @@ GrainComponent::GrainComponent(SynthGrannyAudioProcessor& p) : audioProcessor(p)
 
     //Grain attack
     myGrainAttackSlider.setSliderStyle(Slider::SliderStyle::RotaryVerticalDrag);
-    myGrainAttackSlider.setTextBoxStyle(Slider::TextBoxAbove, false, 40, 20);
+    myGrainAttackSlider.setTextBoxStyle(Slider::TextBoxBelow, false, 40, 20);
     myGrainAttackSlider.setColour(Slider::ColourIds::thumbColourId, Colours::lightgreen.darker());
     addAndMakeVisible(myGrainAttackSlider);
 
@@ -44,7 +44,7 @@ GrainComponent::GrainComponent(SynthGrannyAudioProcessor& p) : audioProcessor(p)
 
     //Grain decay
     myGrainDecaySlider.setSliderStyle(Slider::SliderStyle::RotaryVerticalDrag);
-    myGrainDecaySlider.setTextBoxStyle(Slider::TextBoxAbove, false, 40, 20);
+    myGrainDecaySlider.setTextBoxStyle(Slider::TextBoxBelow, false, 40, 20);
     myGrainDecaySlider.setColour(Slider::ColourIds::thumbColourId, Colours::lightgreen.darker().darker());
     addAndMakeVisible(myGrainDecaySlider);
 
@@ -57,7 +57,7 @@ GrainComponent::GrainComponent(SynthGrannyAudioProcessor& p) : audioProcessor(p)
 
     //Grain overlap
     myGrainOverlapSlider.setSliderStyle(Slider::SliderStyle::RotaryVerticalDrag);
-    myGrainOverlapSlider.setTextBoxStyle(Slider::TextBoxAbove, false, 40, 20);
+    myGrainOverlapSlider.setTextBoxStyle(Slider::TextBoxBelow, false, 40, 20);
     myGrainOverlapSlider.setColour(Slider::ColourIds::thumbColourId, Colours::lightgreen.darker().darker());
     addAndMakeVisible(myGrainOverlapSlider);
 

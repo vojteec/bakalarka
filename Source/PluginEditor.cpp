@@ -29,10 +29,13 @@ SynthGrannyAudioProcessorEditor::SynthGrannyAudioProcessorEditor (SynthGrannyAud
     myWebcamButton.setColour(TextButton::buttonColourId, Colours::silver);
     myWebcamButton.setColour(TextButton::textColourOffId, Colours::black);
     addAndMakeVisible(myWebcamButton);
-
     addAndMakeVisible(myWaveThumbnail);
     addAndMakeVisible(myGrainComponent);
     addAndMakeVisible(myADSR);
+
+    setResizable(true, true);
+    setResizeLimits(720, 480, 8640, 5760);
+    getConstrainer()->setFixedAspectRatio(1.5);
 
     setSize(1080, 720);
 }
@@ -56,10 +59,10 @@ void SynthGrannyAudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
-    myWebcamButton.setBoundsRelative(0.01f, 0.01f, 0.08f, 0.025f);
+    myWebcamButton.setBoundsRelative(0.15f, 0.55f, 0.2f, 0.05f);
     myWaveThumbnail.setBoundsRelative(0.1f, 0.05f, 0.8f, 0.45f);
     myADSR.setBoundsRelative(0.5f, 0.65f, 0.4f, 0.3f);
-    myGrainComponent.setBoundsRelative(0.1f, 0.65f, 0.3f, 0.3f);
+    myGrainComponent.setBoundsRelative(0.0f, 0.65f, 0.4f, 0.3f);
     myImageComponent.setBoundsRelative(0.0f, 0.0f, 0.2f, 0.2f);
 }
 
@@ -67,7 +70,7 @@ bool SynthGrannyAudioProcessorEditor::isInterestedInFileDrag(const StringArray& 
 {
     for (auto file : files)
     {
-        if (file.contains(".wav") || file.contains(".aiff") || file.contains(".flac") || file.contains(".wma") || file.contains(".ogg"))
+        if (file.contains(".wav") || file.contains(".WAV") || file.contains(".aiff") || file.contains(".AIFF") || file.contains(".flac") || file.contains(".FLAC") || file.contains(".wma") || file.contains(".WMA") || file.contains(".ogg") || file.contains(".OGG"))
         {
             return true;
         }

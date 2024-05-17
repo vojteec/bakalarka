@@ -87,5 +87,5 @@ void WaveThumbnail::paint (juce::Graphics& g)
 
 void WaveThumbnail::resized()
 {
-    myLoadButton.setBoundsRelative(0.01f, 0.01f, 0.08f, 0.025f);
+    myLoadButton.setBoundsRelative(0.01f, 0.01f, 0.1f, 0.075f);
 }

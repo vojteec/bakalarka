@@ -65,6 +65,7 @@ public:
     void loadFileViaButton();
     void loadFileViaDragNDrop(const String& path);
     void granulisation();
+    void granulisationByColour(float averageHue, float averageSaturation, float averageLightness);
     void readWaveform(AudioBuffer<float> granulizedBuffer);
 
     int getNumSounds() { return myGrannySynth.getNumSounds(); }
@@ -79,7 +80,6 @@ public:
 
     std::atomic<bool>& isNotePlayed() { return myIsNotePlayed; }
     std::atomic<int>& getSampleCount() { return mySampleCount; }
-
 
 private:
     Synthesiser myGrannySynth;
@@ -97,9 +97,15 @@ private:
     AudioFormatReader* myFormatReader{ nullptr };
 
     AudioProcessorValueTreeState myValTrSt;                         
-    AudioProcessorValueTreeState::ParameterLayout createParams();   
+    AudioProcessorValueTreeState::ParameterLayout createParams(); 
+
+    void averagePixel(const Image& img);
 
     void valueTreePropertyChanged(ValueTree& treeWhosePropertyHasChanged, const Identifier& property) override;
+
+    float averageHueRanged = 50;
+    float averageSaturationRanged = 50;
+    float averageLightnessRanged = 25;
 
     std::atomic<bool> myShouldUpdate{ false };
     std::atomic<bool> myIsNotePlayed{ false };
