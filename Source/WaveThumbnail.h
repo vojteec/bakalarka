@@ -11,6 +11,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include <format>
 #include "PluginProcessor.h"
 
 //==============================================================================
@@ -28,6 +29,8 @@ public:
     bool myShouldBePainting{ false };
 
     String myFileName{ " " };
+    //String mySat = audioProcessor.averageSaturationString;
+    //String myLit = audioProcessor.averageLightnessString;
 
 private:
     TextButton myLoadButton{ CharPointer_UTF8("Na\xc4\x8dt\xc4\x9bte soubor do sampleru bez granulizace") };

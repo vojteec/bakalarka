@@ -28,7 +28,21 @@ SynthGrannyAudioProcessorEditor::SynthGrannyAudioProcessorEditor (SynthGrannyAud
     repaint(); };                                                                                                                              //spusti se proces vykreslovani
     myWebcamButton.setColour(TextButton::buttonColourId, Colours::silver);
     myWebcamButton.setColour(TextButton::textColourOffId, Colours::black);
+
+    myGranulisationButton.onClick = [&]() { audioProcessor.granulisation();
+    repaint(); };
+    myGranulisationButton.setColour(TextButton::buttonColourId, Colours::silver);
+    myGranulisationButton.setColour(TextButton::textColourOffId, Colours::black);
+
+    myDegranulisationButton.onClick = [&]() { audioProcessor.degranulize();
+    repaint(); };
+    myDegranulisationButton.setColour(TextButton::buttonColourId, Colours::silver);
+    myDegranulisationButton.setColour(TextButton::textColourOffId, Colours::black);
+
     addAndMakeVisible(myWebcamButton);
+    addAndMakeVisible(myGranulisationButton);
+    addAndMakeVisible(myDegranulisationButton);
+
     addAndMakeVisible(myWaveThumbnail);
     addAndMakeVisible(myGrainComponent);
     addAndMakeVisible(myADSR);
@@ -60,9 +74,12 @@ void SynthGrannyAudioProcessorEditor::resized()
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
     myWebcamButton.setBoundsRelative(0.15f, 0.55f, 0.2f, 0.05f);
+    myGranulisationButton.setBoundsRelative(0.2f, 0.9f, 0.1f, 0.1f);
+    myDegranulisationButton.setBoundsRelative(0.0f, 0.0f, 0.1f, 0.1f);
+
     myWaveThumbnail.setBoundsRelative(0.1f, 0.05f, 0.8f, 0.45f);
-    myADSR.setBoundsRelative(0.5f, 0.65f, 0.4f, 0.3f);
-    myGrainComponent.setBoundsRelative(0.0f, 0.65f, 0.4f, 0.3f);
+    myADSR.setBoundsRelative(0.5f, 0.60f, 0.5f, 0.3f);
+    myGrainComponent.setBoundsRelative(0.0f, 0.60f, 0.5f, 0.3f);
     myImageComponent.setBoundsRelative(0.0f, 0.0f, 0.2f, 0.2f);
 }
 

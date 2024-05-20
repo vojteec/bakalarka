@@ -26,13 +26,14 @@ public:
     void resized() override;
 
 private:
-    Slider myGrainLengthSlider, myGrainAttackSlider, myGrainDecaySlider, myGrainOverlapSlider;
-    Label myGrainLengthLabel, myGrainAttackLabel, myGrainDecayLabel, myGrainOverlapLabel;
+    Slider myGrainLengthSlider, myGrainAttackSlider, myGrainDecaySlider, myGrainOverlapSlider, myGrainBalanceSlider;
+    Label myGrainLengthLabel, myGrainAttackLabel, myGrainDecayLabel, myGrainOverlapLabel, myGrainBalanceLabel;
 
     std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> myGrainLengthAttachment;
     std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> myGrainAttackAttachment;
     std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> myGrainDecayAttachment;
     std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> myGrainOverlapAttachment;
+    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> myGrainBalanceAttachment;
 
     SynthGrannyAudioProcessor& audioProcessor;
 

@@ -165,10 +165,10 @@ void SynthGrannyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     if (myShouldUpdate)
     {
         updateADSR();
-        if (originalBuffer.getNumSamples() > 0)
+        /*if (originalBuffer.getNumSamples() > 0)
         {
             granulisation();
-        }
+        }*/
         myShouldUpdate = false;
     }
     
@@ -268,19 +268,15 @@ void SynthGrannyAudioProcessor::averagePixel(const Image& img)
     this->averageHueRanged = 100 * std::abs(std::cos(50 * averageHue));
     this->averageSaturationRanged = 100 * averageSaturation;
     this->averageLightnessRanged = 50 * averageLightness;
-    
+
+    granulisationByColour(averageHueRanged, averageSaturationRanged, averageLightnessRanged);
 }
 
 void SynthGrannyAudioProcessor::colourModifier()
 {
-    //myCameraDevice->takeStillPicture(averagePixel); //přeneseme se do averagePixel, až se dokončí tato metoda, budeme pracovat zase tady
-
     myCameraDevice->takeStillPicture([this](const juce::Image& image) {
         this->averagePixel(image);
         });
-
-    granulisationByColour(averageHueRanged, averageSaturationRanged, averageLightnessRanged);
-
 }
 
 void SynthGrannyAudioProcessor::loadFileViaDragNDrop(const String& path)
@@ -291,36 +287,27 @@ void SynthGrannyAudioProcessor::loadFileViaDragNDrop(const String& path)
     myFormatReader = myFormatManager.createReaderFor(file);
 
     ////////////////////////////////////////////////////////
-
-
-
-
-
     originalBuffer.setSize(myFormatReader->numChannels, myFormatReader->lengthInSamples);
     myFormatReader->read(&originalBuffer, 0, myFormatReader->lengthInSamples, 0, true, true);
-    
 
     if (originalBuffer.getNumSamples() > 0)
     {
         granulisation();
     }
-    
-
-
-
-
-
-
-
-    ///////////////////////////////////////////////////////////////////////ODTUD SE BUDE KOPIROVAT
-
-
+    else
+    {
+        return;
+    }
 }
 
 void SynthGrannyAudioProcessor::granulisation()
 {
-    /////prepocet velikosti grainu z ms na pocet vzorku
+    if (originalBuffer.getNumSamples() == 0)
+    {
+        return;
+    }
 
+    /////prepocet velikosti grainu z ms na pocet vzorku
     float grainLengthInMs = myValTrSt.getRawParameterValue("GRAIN LENGTH")->load();
     int grainSize = static_cast<int>((grainLengthInMs / 1000) * myFormatReader->sampleRate);
 
@@ -361,7 +348,7 @@ void SynthGrannyAudioProcessor::granulisation()
     /////cyklus prochazeni a granulizace originalniho bufferu
 
     int grainIdx = 0;
-    for (int sample = 0; sample < originalBuffer.getNumSamples(); sample++)
+    for (int sample = 0; sample < (numGrains - 1) * grainSize; sample++)
     {
 
         /////nacteni stereo samplu do transportniho bufferu o velikosti grainu
@@ -394,7 +381,7 @@ void SynthGrannyAudioProcessor::granulisation()
             grainIdx++;
         }
     }
-    /////sekce pro doplneni zbytku samplu, ktere prebyvaji a nezaplni cely grain
+    //sekce pro doplneni zbytku samplu, ktere prebyvaji a nezaplni cely grain
 
     int diff = grainSize - grainIdx;
     int lastGrainStartIdx = tempIdxs[0] * grainSize;
@@ -406,18 +393,13 @@ void SynthGrannyAudioProcessor::granulisation()
             tempBuffer.setSample(channel, lastGrainStartIdx + i, myGrain.getSample(channel, i));
         }
         int numMovedSamples = tempBuffer.getNumSamples() - lastGrainStartIdx - grainIdx;
-        //posun o rozdil
-        for (int i = 0; i < numMovedSamples; i++)
-        {
-            tempBuffer.setSample(channel, lastGrainStartIdx + i, tempBuffer.getSample(channel, lastGrainStartIdx + diff + i));
-        }
     }
 
     /////////////////////////PREKRYTI
 
     AudioBuffer<float> granulizedBuffer;
     granulizedBuffer.setSize(tempBuffer.getNumChannels(), numGrains * grainSize - (numGrains - 1) * overlapInSamples);
-
+    
     int notOverlappedSamples = grainSize - 2 * overlapInSamples;
     for (int channel = 0; channel < granulizedBuffer.getNumChannels(); channel++)
     {
@@ -449,9 +431,12 @@ void SynthGrannyAudioProcessor::granulisation()
                     {
                         continue;
                     }
-                    granulizedBuffer.setSample(channel, granulizedBufferSampleIdx, tempBuffer.getSample(channel, grainNumber * grainSize + sampleInGrainIdx)); //ostatni vzorky zapiseme jak jsou
-                    granulizedBufferSampleIdx++;
-                    continue;
+                    if (sampleInGrainIdx < grainSize) //grainy, ktere jsou mimo prekryti, zapisujeme tak jak jsou
+                    {
+                        granulizedBuffer.setSample(channel, granulizedBufferSampleIdx, tempBuffer.getSample(channel, grainNumber * grainSize + sampleInGrainIdx));
+                        granulizedBufferSampleIdx++;
+                        continue;
+                    }
                 }
                 //grain, ktery neni prvni nebo posledni
                 if (sampleInGrainIdx < overlapInSamples) //preskakujeme zacatek grainu, uz je vyreseny
@@ -474,9 +459,32 @@ void SynthGrannyAudioProcessor::granulisation()
         }
     }
 
-    //APLIKACE FADE-IN A FADE-OUT PRO REDUKCI PRASKÁNÍ PŘI LOOPINGU
-    granulizedBuffer.applyGainRamp(0, 1200, 0.0f, 1.0f);
-    granulizedBuffer.applyGainRamp(granulizedBuffer.getNumSamples() - 1201, 1200, 1.0f, 0.0f);
+    readWaveform(granulizedBuffer);
+
+    //APLIKACE PANORAMY
+    float balanceFromValTrSt = myValTrSt.getRawParameterValue("GRAIN BALANCE")->load();
+    float balance = balanceFromValTrSt / 100;
+
+    if (granulizedBuffer.getNumChannels() < 2) //korekce pro mono stopy pro vytvoreni dvou identickych kanalu
+    {
+        granulizedBuffer.setSize(2, granulizedBuffer.getNumSamples(), 1);
+        for (int sample = 0; sample < granulizedBuffer.getNumSamples(); sample++)
+        {
+            granulizedBuffer.setSample(1, sample, granulizedBuffer.getSample(0, sample));
+        }
+    }
+
+    if (granulizedBuffer.getNumChannels() == 2) //pokud je input stereo, aplikuj balance
+    {
+        if (balance < 0)
+        {
+            granulizedBuffer.applyGain(1, 0, granulizedBuffer.getNumSamples() - 2, 1.0f + balance);
+        }
+        if (balance > 0)
+        {
+            granulizedBuffer.applyGain(0, 0, granulizedBuffer.getNumSamples() - 2, 1.0f - balance);
+        }
+    }
 
     MemoryBlock memoryBlock;
     {
@@ -494,12 +502,16 @@ void SynthGrannyAudioProcessor::granulisation()
 
     ////////////////////////
 
-    readWaveform(granulizedBuffer);
 
     BigInteger range;
     range.setRange(0, 128, true);
-    myGrannySynth.addSound(new SamplerSound("Sample", *reader, range, 72, 0.1, 0.1, 300.0));
+    myGrannySynth.addSound(new SamplerSound("Sample", *reader, range, 72, 0.1, 0.1, 2400.0));
     updateADSR();
+
+    //cisteni pameti
+    myGrain.setSize(0, 0, 0, 1, 0);
+    tempBuffer.setSize(0, 0, 0, 1, 0);
+    granulizedBuffer.setSize(0, 0, 0, 1, 0);
 }
 
 void SynthGrannyAudioProcessor::granulisationByColour(float averageHue, float averageSaturation, float averageLightness)
@@ -548,7 +560,7 @@ void SynthGrannyAudioProcessor::granulisationByColour(float averageHue, float av
         /////cyklus prochazeni a granulizace originalniho bufferu
 
         int grainIdx = 0;
-        for (int sample = 0; sample < originalBuffer.getNumSamples(); sample++)
+        for (int sample = 0; sample < (numGrains - 1) * grainSize; sample++)
         {
 
             /////nacteni stereo samplu do transportniho bufferu o velikosti grainu
@@ -593,17 +605,14 @@ void SynthGrannyAudioProcessor::granulisationByColour(float averageHue, float av
                 tempBuffer.setSample(channel, lastGrainStartIdx + i, myGrain.getSample(channel, i));
             }
             int numMovedSamples = tempBuffer.getNumSamples() - lastGrainStartIdx - grainIdx;
-            //posun o rozdil
-            for (int i = 0; i < numMovedSamples; i++)
-            {
-                tempBuffer.setSample(channel, lastGrainStartIdx + i, tempBuffer.getSample(channel, lastGrainStartIdx + diff + i));
-            }
         }
 
         /////////////////////////PREKRYTI
 
         AudioBuffer<float> granulizedBuffer;
         granulizedBuffer.setSize(tempBuffer.getNumChannels(), numGrains * grainSize - (numGrains - 1) * overlapInSamples);
+
+        
 
         int notOverlappedSamples = grainSize - 2 * overlapInSamples;
         for (int channel = 0; channel < granulizedBuffer.getNumChannels(); channel++)
@@ -661,9 +670,32 @@ void SynthGrannyAudioProcessor::granulisationByColour(float averageHue, float av
             }
         }
 
-        //APLIKACE FADE-IN A FADE-OUT PRO REDUKCI PRASKÁNÍ PŘI LOOPINGU
-        granulizedBuffer.applyGainRamp(0, 1200, 0.0f, 1.0f);
-        granulizedBuffer.applyGainRamp(granulizedBuffer.getNumSamples() - 1201, 1200, 1.0f, 0.0f);
+        readWaveform(granulizedBuffer);
+
+        //APLIKACE PANORAMY
+        float balanceFromValTrSt = myValTrSt.getRawParameterValue("GRAIN BALANCE")->load();
+        float balance = balanceFromValTrSt / 100;
+
+        if (granulizedBuffer.getNumChannels() < 2) //korekce pro mono stopy pro vytvoreni dvou identickych kanalu
+        {
+            granulizedBuffer.setSize(2, granulizedBuffer.getNumSamples(), 1);
+            for (int sample = 0; sample < granulizedBuffer.getNumSamples(); sample++)
+            {
+                granulizedBuffer.setSample(1, sample, granulizedBuffer.getSample(0, sample));
+            }
+        }
+
+        if (granulizedBuffer.getNumChannels() == 2) //pokud je input stereo, aplikuj balance
+        {
+            if (balance < 0)
+            {
+                granulizedBuffer.applyGain(1, 0, granulizedBuffer.getNumSamples() - 2, 1.0f + balance);
+            }
+            if (balance > 0)
+            {
+                granulizedBuffer.applyGain(0, 0, granulizedBuffer.getNumSamples() - 2, 1.0f - balance);
+            }
+        }
 
         MemoryBlock memoryBlock;
         {
@@ -681,19 +713,20 @@ void SynthGrannyAudioProcessor::granulisationByColour(float averageHue, float av
 
         ////////////////////////
 
-        readWaveform(granulizedBuffer);
-
         BigInteger range;
         range.setRange(0, 128, true);
-        myGrannySynth.addSound(new SamplerSound("Sample", *reader, range, 72, 0.1, 0.1, 300.0));
+        myGrannySynth.addSound(new SamplerSound("Sample", *reader, range, 72, 0.1, 0.1, 2400.0));
         updateADSR();
+
+        //cisteni pameti
+        myGrain.setSize(0, 0, 0, 1, 0);
+        tempBuffer.setSize(0, 0, 0, 1, 0);
+        granulizedBuffer.setSize(0, 0, 0, 1, 0);
     }
 }
 
 void SynthGrannyAudioProcessor::loadFileViaButton()
 {
-    myGrannySynth.clearSounds();
-
     AudioBuffer<float> tempBuffer;
     FileChooser chooser{ "Vyberte soubor", {}, "*.wav;*.flac;*.aiff;*.wma;*.ogg"};
     if (chooser.browseForFileToOpen())
@@ -713,17 +746,26 @@ void SynthGrannyAudioProcessor::loadFileViaButton()
         return;
     }
 
-    tempBuffer.setSize(myFormatReader->numChannels, myFormatReader->lengthInSamples);
-    myFormatReader->read(&tempBuffer, 0, myFormatReader->lengthInSamples, 0, true, true);
+    originalBuffer.setSize(myFormatReader->numChannels, myFormatReader->lengthInSamples);
+    myFormatReader->read(&originalBuffer, 0, myFormatReader->lengthInSamples, 0, true, true);
 
-    readWaveform(tempBuffer);
+    degranulize();
+}
 
-    BigInteger range;
-    range.setRange(0, 128, true);
+void SynthGrannyAudioProcessor::degranulize()
+{
+    myGrannySynth.clearSounds();
+    if (originalBuffer.getNumSamples() > 0)
+    {
+        readWaveform(originalBuffer);
 
-    myGrannySynth.addSound(new SamplerSound("Sample", *myFormatReader, range, 72, 0.1, 0.1, 300.0));
+        BigInteger range;
+        range.setRange(0, 128, true);
 
-    updateADSR();
+        myGrannySynth.addSound(new SamplerSound("Sample", *myFormatReader, range, 72, 0.1, 0.1, 2400.0));
+
+        updateADSR();
+    }
 }
 
 void SynthGrannyAudioProcessor::readWaveform(AudioBuffer<float> tempBuffer)
@@ -760,6 +802,7 @@ AudioProcessorValueTreeState::ParameterLayout SynthGrannyAudioProcessor::createP
     parameters.push_back(std::make_unique<AudioParameterFloat>("GRAIN ATTACK", "Attack", 0.0f, 100.0f, 50.0f));
     parameters.push_back(std::make_unique<AudioParameterFloat>("GRAIN DECAY", "Decay", 0.0f, 100.0f, 50.0f));
     parameters.push_back(std::make_unique<AudioParameterFloat>("GRAIN OVERLAP", "Overlap", 0.0f, 50.0f, 0.0f));
+    parameters.push_back(std::make_unique<AudioParameterFloat>("GRAIN BALANCE", "Balance", -100.0f, 100.0f, 0.0f));
 
     return{ parameters.begin(), parameters.end() };
 }

@@ -67,6 +67,7 @@ public:
     void granulisation();
     void granulisationByColour(float averageHue, float averageSaturation, float averageLightness);
     void readWaveform(AudioBuffer<float> granulizedBuffer);
+    void degranulize();
 
     int getNumSounds() { return myGrannySynth.getNumSounds(); }
     AudioBuffer<float>& getWave() { return myWave; }
@@ -80,6 +81,14 @@ public:
 
     std::atomic<bool>& isNotePlayed() { return myIsNotePlayed; }
     std::atomic<int>& getSampleCount() { return mySampleCount; }
+
+    float averageHueRanged = 50.0f;
+    float averageSaturationRanged = 50.0f;
+    float averageLightnessRanged = 25.0f;
+
+    //String averageHueString = String(averageHueRanged);
+    //String averageSaturationString = String(averageSaturationRanged);
+    //String averageLightnessString = std::to_string(averageLightnessRanged);
 
 private:
     Synthesiser myGrannySynth;
@@ -102,10 +111,6 @@ private:
     void averagePixel(const Image& img);
 
     void valueTreePropertyChanged(ValueTree& treeWhosePropertyHasChanged, const Identifier& property) override;
-
-    float averageHueRanged = 50;
-    float averageSaturationRanged = 50;
-    float averageLightnessRanged = 25;
 
     std::atomic<bool> myShouldUpdate{ false };
     std::atomic<bool> myIsNotePlayed{ false };

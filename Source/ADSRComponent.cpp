@@ -21,7 +21,7 @@ ADSRComponent::ADSRComponent(SynthGrannyAudioProcessor& p) : audioProcessor (p)
     myAttackSlider.setColour(Slider::ColourIds::textBoxTextColourId, Colours::white);
     addAndMakeVisible(myAttackSlider);
 
-    myAttackLabel.setFont(10.0f);
+    myAttackLabel.setFont(8.0f);
     myAttackLabel.setText("Attack (s)", NotificationType::dontSendNotification);
     myAttackLabel.setColour(Label::textColourId, Colours::white);
     myAttackLabel.setJustificationType(Justification::centredTop);
@@ -35,7 +35,7 @@ ADSRComponent::ADSRComponent(SynthGrannyAudioProcessor& p) : audioProcessor (p)
     myDecaySlider.setColour(Slider::ColourIds::thumbColourId, Colours::lightgreen.darker());
     addAndMakeVisible(myDecaySlider);
 
-    myDecayLabel.setFont(10.0f);
+    myDecayLabel.setFont(8.0f);
     myDecayLabel.setText("Decay (s)", NotificationType::dontSendNotification);
     myDecayLabel.setJustificationType(Justification::centredTop);
     myDecayLabel.attachToComponent(&myDecaySlider, false);
@@ -48,7 +48,7 @@ ADSRComponent::ADSRComponent(SynthGrannyAudioProcessor& p) : audioProcessor (p)
     mySustainSlider.setColour(Slider::ColourIds::thumbColourId, Colours::lightgreen.darker().darker());
     addAndMakeVisible(mySustainSlider);
 
-    mySustainLabel.setFont(10.0f);
+    mySustainLabel.setFont(8.0f);
     mySustainLabel.setText("Sustain (%)", NotificationType::dontSendNotification);
     mySustainLabel.setJustificationType(Justification::centredTop);
     mySustainLabel.attachToComponent(&mySustainSlider, false);
@@ -61,7 +61,7 @@ ADSRComponent::ADSRComponent(SynthGrannyAudioProcessor& p) : audioProcessor (p)
     myReleaseSlider.setColour(Slider::ColourIds::thumbColourId, Colours::lightgreen.darker().darker().darker());
     addAndMakeVisible(myReleaseSlider);
 
-    myReleaseLabel.setFont(10.0f);
+    myReleaseLabel.setFont(8.0f);
     myReleaseLabel.setText("Release (s)", NotificationType::dontSendNotification);
     myReleaseLabel.setJustificationType(Justification::centredTop);
     myReleaseLabel.attachToComponent(&myReleaseSlider, false);
