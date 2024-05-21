@@ -1,0 +1,6 @@
+CO PØIDAT DO TEORIE?
+
+Kapitola 2: sampler – jak funguje (pevná vs promìnlivá fvz, looping, oddìlení attack, sustain a release fází samplù a jejich použití)
+
+Kapitoly 3.1 a 3.2 (Framework JUCE a Snímání barev by mohly být souèástí budoucí následující podkapitoly vlastního vývoje s názvem ???Použitý framework a vývojové prostøedí???)
+

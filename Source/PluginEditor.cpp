@@ -90,7 +90,7 @@ bool SynthGrannyAudioProcessorEditor::isInterestedInFileDrag(const StringArray& 
 {
     for (auto file : files)
     {
-        if (file.contains(".wav") || file.contains(".WAV") || file.contains(".aiff") || file.contains(".AIFF") || file.contains(".flac") || file.contains(".FLAC") || file.contains(".wma") || file.contains(".WMA") || file.contains(".ogg") || file.contains(".OGG"))
+        if (file.contains(".wav") || file.contains(".WAV") || file.contains(".aiff") || file.contains(".AIFF") || file.contains(".flac") || file.contains(".FLAC") || file.contains(".wma") || file.contains(".WMA") || file.contains(".ogg") || file.contains(".OGG") || file.contains(".mp3") || file.contains(".MP3"))
         {
             return true;
         }

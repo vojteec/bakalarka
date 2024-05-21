@@ -728,7 +728,7 @@ void SynthGrannyAudioProcessor::granulisationByColour(float averageHue, float av
 void SynthGrannyAudioProcessor::loadFileViaButton()
 {
     AudioBuffer<float> tempBuffer;
-    FileChooser chooser{ "Vyberte soubor", {}, "*.wav;*.flac;*.aiff;*.wma;*.ogg"};
+    FileChooser chooser{ "Vyberte soubor", {}, "*.wav;*.mp3;*.flac;*.aiff;*.wma;*.ogg"};
     if (chooser.browseForFileToOpen())
     {
         auto file = chooser.getResult();
