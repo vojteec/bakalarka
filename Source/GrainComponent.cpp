@@ -14,6 +14,8 @@
 //==============================================================================
 GrainComponent::GrainComponent(SynthGrannyAudioProcessor& p) : audioProcessor(p)
 {
+    float fontSize = 16.0f;
+
     //Grain length
     myGrainLengthSlider.setSliderStyle(Slider::SliderStyle::RotaryVerticalDrag);
     myGrainLengthSlider.setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
@@ -21,7 +23,7 @@ GrainComponent::GrainComponent(SynthGrannyAudioProcessor& p) : audioProcessor(p)
     myGrainLengthSlider.setColour(Slider::ColourIds::textBoxTextColourId, Colours::white);
     addAndMakeVisible(myGrainLengthSlider);
 
-    myGrainLengthLabel.setFont(18.0f);
+    myGrainLengthLabel.setFont(fontSize);
     myGrainLengthLabel.setText(CharPointer_UTF8("D\xc3\xa9lka grainu (ms)"), NotificationType::dontSendNotification);
     myGrainLengthLabel.setColour(Label::textColourId, Colours::white);
     myGrainLengthLabel.setJustificationType(Justification::centredTop);
@@ -35,7 +37,7 @@ GrainComponent::GrainComponent(SynthGrannyAudioProcessor& p) : audioProcessor(p)
     myGrainAttackSlider.setColour(Slider::ColourIds::thumbColourId, Colours::lightgreen.darker());
     addAndMakeVisible(myGrainAttackSlider);
 
-    myGrainAttackLabel.setFont(18.0f);
+    myGrainAttackLabel.setFont(fontSize);
     myGrainAttackLabel.setText("Attack grainu (%)", NotificationType::dontSendNotification);
     myGrainAttackLabel.setJustificationType(Justification::centredTop);
     myGrainAttackLabel.attachToComponent(&myGrainAttackSlider, false);
@@ -48,7 +50,7 @@ GrainComponent::GrainComponent(SynthGrannyAudioProcessor& p) : audioProcessor(p)
     myGrainDecaySlider.setColour(Slider::ColourIds::thumbColourId, Colours::lightgreen.darker().darker());
     addAndMakeVisible(myGrainDecaySlider);
 
-    myGrainDecayLabel.setFont(18.0f);
+    myGrainDecayLabel.setFont(fontSize);
     myGrainDecayLabel.setText("Decay grainu (%)", NotificationType::dontSendNotification);
     myGrainDecayLabel.setJustificationType(Justification::centredTop);
     myGrainDecayLabel.attachToComponent(&myGrainDecaySlider, false);
@@ -61,7 +63,7 @@ GrainComponent::GrainComponent(SynthGrannyAudioProcessor& p) : audioProcessor(p)
     myGrainOverlapSlider.setColour(Slider::ColourIds::thumbColourId, Colours::lightgreen.darker().darker().darker());
     addAndMakeVisible(myGrainOverlapSlider);
 
-    myGrainOverlapLabel.setFont(18.0f);
+    myGrainOverlapLabel.setFont(fontSize);
     myGrainOverlapLabel.setText(CharPointer_UTF8("P\xc5\x99\ekryt\xc3\xad (%)"), NotificationType::dontSendNotification);
     myGrainOverlapLabel.setJustificationType(Justification::centredTop);
     myGrainOverlapLabel.attachToComponent(&myGrainOverlapSlider, false);
@@ -74,7 +76,7 @@ GrainComponent::GrainComponent(SynthGrannyAudioProcessor& p) : audioProcessor(p)
     myGrainBalanceSlider.setColour(Slider::ColourIds::thumbColourId, Colours::lightgreen.darker().darker().darker().darker());
     addAndMakeVisible(myGrainBalanceSlider);
 
-    myGrainBalanceLabel.setFont(18.0f);
+    myGrainBalanceLabel.setFont(fontSize);
     myGrainBalanceLabel.setText(CharPointer_UTF8("Panorama (%)"), NotificationType::dontSendNotification);
     myGrainBalanceLabel.setJustificationType(Justification::centredTop);
     myGrainBalanceLabel.attachToComponent(&myGrainBalanceSlider, false);
@@ -88,7 +90,8 @@ GrainComponent::~GrainComponent()
 
 void GrainComponent::paint(juce::Graphics& g)
 {
-    g.fillAll(Colours::grey.darker());
+    g.setGradientFill(ColourGradient(Colours::grey.darker().darker(), 0, getHeight(), Colours::grey.darker(), 0, 0, false));
+    g.fillRect(0, 0, getWidth(), getHeight());
 }
 
 void GrainComponent::resized()

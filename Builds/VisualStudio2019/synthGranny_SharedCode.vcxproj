@@ -2379,6 +2379,7 @@
     <ClCompile Include="..\..\..\..\juce-7.0.7-windows\JUCE\modules\juce_video\juce_video.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\BinaryData.cpp"/>
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_audio_basics.cpp"/>
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_audio_devices.cpp"/>
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_audio_formats.cpp"/>
@@ -3356,10 +3357,20 @@
     <ClInclude Include="..\..\..\..\juce-7.0.7-windows\JUCE\modules\juce_video\native\juce_Video_windows.h"/>
     <ClInclude Include="..\..\..\..\juce-7.0.7-windows\JUCE\modules\juce_video\playback\juce_VideoComponent.h"/>
     <ClInclude Include="..\..\..\..\juce-7.0.7-windows\JUCE\modules\juce_video\juce_video.h"/>
+    <ClInclude Include="..\..\JuceLibraryCode\BinaryData.h"/>
     <ClInclude Include="..\..\JuceLibraryCode\JuceHeader.h"/>
     <ClInclude Include="..\..\JuceLibraryCode\JucePluginDefines.h"/>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\..\button\buttonDegranulize.PNG"/>
+    <None Include="..\..\..\..\button\buttonDegranulizeDown.PNG"/>
+    <None Include="..\..\..\..\button\buttonLoadToSampler.PNG"/>
+    <None Include="..\..\..\..\button\buttonLoadToSamplerDown.PNG"/>
+    <None Include="..\..\..\..\button\buttonSetParameters.PNG"/>
+    <None Include="..\..\..\..\button\buttonSetParametersDown.PNG"/>
+    <None Include="..\..\..\..\button\buttonSetParametersHSL.PNG"/>
+    <None Include="..\..\..\..\button\buttonSetParametersHSLDown.PNG"/>
+    <None Include="..\..\..\..\rotarySlider.png"/>
     <None Include="..\..\..\..\juce-7.0.7-windows\JUCE\modules\juce_audio_devices\native\oboe\CMakeLists.txt"/>
     <None Include="..\..\..\..\juce-7.0.7-windows\JUCE\modules\juce_audio_devices\native\oboe\README.md"/>
     <None Include="..\..\..\..\juce-7.0.7-windows\JUCE\modules\juce_audio_formats\codecs\flac\Flac Licence.txt"/>

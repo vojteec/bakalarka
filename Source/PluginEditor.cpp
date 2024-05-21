@@ -13,31 +13,34 @@
 SynthGrannyAudioProcessorEditor::SynthGrannyAudioProcessorEditor (SynthGrannyAudioProcessor& p)                                                 //konstruktor editoru
     : AudioProcessorEditor (&p), myWaveThumbnail (p), myADSR(p), myGrainComponent(p), audioProcessor (p) 
 {
-    /*auto happy_grannyImage = ImageCache::getFromMemory(BinaryData::happy_granny_png, BinaryData::happy_granny_pngSize);
+    Image webcamButton = ImageCache::getFromMemory(BinaryData::buttonSetParametersHSL_PNG, BinaryData::buttonSetParametersHSL_PNGSize);
+    Image webcamButtonDown = ImageCache::getFromMemory(BinaryData::buttonSetParametersHSLDown_PNG, BinaryData::buttonSetParametersHSLDown_PNGSize);
 
-    if (! happy_grannyImage.isNull())
-        myImageComponent.setImage(happy_grannyImage, RectanglePlacement::stretchToFit);
-    else
-        jassert(! happy_grannyImage.isNull());
-    */
-    //addAndMakeVisible(myImageComponent);
+    Image granulisationButton = ImageCache::getFromMemory(BinaryData::buttonSetParameters_PNG, BinaryData::buttonSetParameters_PNGSize);
+    Image granulistaionButtonDown = ImageCache::getFromMemory(BinaryData::buttonSetParametersDown_PNG, BinaryData::buttonSetParametersDown_PNGSize);
 
-    startTimerHz(30);                                       //nastaveni velikosti okna
+    Image degranulisationButton = ImageCache::getFromMemory(BinaryData::buttonDegranulize_PNG, BinaryData::buttonDegranulize_PNGSize);
+    Image degranulisationButtonDown = ImageCache::getFromMemory(BinaryData::buttonDegranulizeDown_PNG, BinaryData::buttonDegranulizeDown_PNGSize);
 
+    startTimerHz(30);
+
+    myWebcamButton.setImages(true, true, true, webcamButton, 1.0f, {}, webcamButton, 1.0f, {}, webcamButtonDown, 1.0f, {});
     myWebcamButton.onClick = [&]() { audioProcessor.colourModifier();                                                                         //boolean, ktery rozhoduje, kdy se vykresli waveform je aktivovan
     repaint(); };                                                                                                                              //spusti se proces vykreslovani
-    myWebcamButton.setColour(TextButton::buttonColourId, Colours::silver);
-    myWebcamButton.setColour(TextButton::textColourOffId, Colours::black);
+    /*myWebcamButton.setColour(TextButton::buttonColourId, Colours::silver);
+    myWebcamButton.setColour(TextButton::textColourOffId, Colours::black);*/
 
+    myGranulisationButton.setImages(true, true, true, granulisationButton, 1.0f, {}, granulisationButton, 1.0f, {}, granulistaionButtonDown, 1.0f, {});
     myGranulisationButton.onClick = [&]() { audioProcessor.granulisation();
     repaint(); };
-    myGranulisationButton.setColour(TextButton::buttonColourId, Colours::silver);
-    myGranulisationButton.setColour(TextButton::textColourOffId, Colours::black);
+    /*myGranulisationButton.setColour(TextButton::buttonColourId, Colours::silver);
+    myGranulisationButton.setColour(TextButton::textColourOffId, Colours::black);*/
 
+    myDegranulisationButton.setImages(true, true, true, degranulisationButton, 1.0f, {}, degranulisationButton, 1.0f, {}, degranulisationButtonDown, 1.0f, {});
     myDegranulisationButton.onClick = [&]() { audioProcessor.degranulize();
     repaint(); };
-    myDegranulisationButton.setColour(TextButton::buttonColourId, Colours::silver);
-    myDegranulisationButton.setColour(TextButton::textColourOffId, Colours::black);
+    /*myDegranulisationButton.setColour(TextButton::buttonColourId, Colours::silver);
+    myDegranulisationButton.setColour(TextButton::textColourOffId, Colours::black);*/
 
     addAndMakeVisible(myWebcamButton);
     addAndMakeVisible(myGranulisationButton);
@@ -51,7 +54,7 @@ SynthGrannyAudioProcessorEditor::SynthGrannyAudioProcessorEditor (SynthGrannyAud
     setResizeLimits(720, 480, 8640, 5760);
     getConstrainer()->setFixedAspectRatio(1.5);
 
-    setSize(1080, 720);
+    setSize(1024, 500);
 }
 
 
@@ -63,7 +66,8 @@ SynthGrannyAudioProcessorEditor::~SynthGrannyAudioProcessorEditor()             
 //==============================================================================
 void SynthGrannyAudioProcessorEditor::paint (juce::Graphics& g)
 {
-    g.fillAll(Colours::grey.darker());                                                                                                                  //nastaveni barvy pozadi
+    g.setGradientFill(ColourGradient(Colours::grey.darker().darker().darker(), 0.0f, getHeight(), Colours::grey.darker(), getWidth(), 0, false));        //nastaveni barvy pozadi
+    g.fillRect(0, 0, getWidth(), getHeight());
     g.setColour(Colours::white);                                                                                                                //barva cary je nastavena na bilou
 
     g.setFont(15.0f);                                                                                                                           //nastaveni velikosti fontu
@@ -73,14 +77,13 @@ void SynthGrannyAudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
-    myWebcamButton.setBoundsRelative(0.15f, 0.55f, 0.2f, 0.05f);
-    myGranulisationButton.setBoundsRelative(0.2f, 0.9f, 0.1f, 0.1f);
-    myDegranulisationButton.setBoundsRelative(0.0f, 0.0f, 0.1f, 0.1f);
+    myWebcamButton.setBoundsRelative(0.15f, 0.53f, 0.08f, 0.08f);
+    myGranulisationButton.setBoundsRelative(0.05f, 0.53f, 0.08f, 0.08f);
+    myDegranulisationButton.setBoundsRelative(0.25f, 0.53f, 0.08f, 0.08f);
 
-    myWaveThumbnail.setBoundsRelative(0.1f, 0.05f, 0.8f, 0.45f);
-    myADSR.setBoundsRelative(0.5f, 0.60f, 0.5f, 0.3f);
-    myGrainComponent.setBoundsRelative(0.0f, 0.60f, 0.5f, 0.3f);
-    myImageComponent.setBoundsRelative(0.0f, 0.0f, 0.2f, 0.2f);
+    myWaveThumbnail.setBoundsRelative(0.05f, 0.05f, 0.9f, 0.45f);
+    myADSR.setBoundsRelative(0.5f, 0.65f, 0.5f, 0.25f);
+    myGrainComponent.setBoundsRelative(0.0f, 0.65f, 0.5f, 0.25f);
 }
 
 bool SynthGrannyAudioProcessorEditor::isInterestedInFileDrag(const StringArray& files)                                                          //funkce, ktera overi, jestli zvoleny soubor je ve spravnem formatu

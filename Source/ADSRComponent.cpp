@@ -14,14 +14,16 @@
 //==============================================================================
 ADSRComponent::ADSRComponent(SynthGrannyAudioProcessor& p) : audioProcessor (p)
 {
+    float fontSize = 16.0f;
+
     //Attack
     myAttackSlider.setSliderStyle(Slider::SliderStyle::RotaryVerticalDrag);
-    myAttackSlider.setTextBoxStyle(Slider::TextBoxBelow, false, 40, 20);
+    myAttackSlider.setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
     myAttackSlider.setColour(Slider::ColourIds::thumbColourId, Colours::lightgreen);
     myAttackSlider.setColour(Slider::ColourIds::textBoxTextColourId, Colours::white);
     addAndMakeVisible(myAttackSlider);
 
-    myAttackLabel.setFont(8.0f);
+    myAttackLabel.setFont(fontSize);
     myAttackLabel.setText("Attack (s)", NotificationType::dontSendNotification);
     myAttackLabel.setColour(Label::textColourId, Colours::white);
     myAttackLabel.setJustificationType(Justification::centredTop);
@@ -31,11 +33,11 @@ ADSRComponent::ADSRComponent(SynthGrannyAudioProcessor& p) : audioProcessor (p)
 
     //Decay
     myDecaySlider.setSliderStyle(Slider::SliderStyle::RotaryVerticalDrag);
-    myDecaySlider.setTextBoxStyle(Slider::TextBoxBelow, false, 40, 20);
+    myDecaySlider.setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
     myDecaySlider.setColour(Slider::ColourIds::thumbColourId, Colours::lightgreen.darker());
     addAndMakeVisible(myDecaySlider);
 
-    myDecayLabel.setFont(8.0f);
+    myDecayLabel.setFont(fontSize);
     myDecayLabel.setText("Decay (s)", NotificationType::dontSendNotification);
     myDecayLabel.setJustificationType(Justification::centredTop);
     myDecayLabel.attachToComponent(&myDecaySlider, false);
@@ -44,11 +46,11 @@ ADSRComponent::ADSRComponent(SynthGrannyAudioProcessor& p) : audioProcessor (p)
 
     //Sustain
     mySustainSlider.setSliderStyle(Slider::SliderStyle::RotaryVerticalDrag);
-    mySustainSlider.setTextBoxStyle(Slider::TextBoxBelow, false, 40, 20);
+    mySustainSlider.setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
     mySustainSlider.setColour(Slider::ColourIds::thumbColourId, Colours::lightgreen.darker().darker());
     addAndMakeVisible(mySustainSlider);
 
-    mySustainLabel.setFont(8.0f);
+    mySustainLabel.setFont(fontSize);
     mySustainLabel.setText("Sustain (%)", NotificationType::dontSendNotification);
     mySustainLabel.setJustificationType(Justification::centredTop);
     mySustainLabel.attachToComponent(&mySustainSlider, false);
@@ -57,11 +59,11 @@ ADSRComponent::ADSRComponent(SynthGrannyAudioProcessor& p) : audioProcessor (p)
 
     //Release
     myReleaseSlider.setSliderStyle(Slider::SliderStyle::RotaryVerticalDrag);
-    myReleaseSlider.setTextBoxStyle(Slider::TextBoxBelow, false, 40, 20);
+    myReleaseSlider.setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
     myReleaseSlider.setColour(Slider::ColourIds::thumbColourId, Colours::lightgreen.darker().darker().darker());
     addAndMakeVisible(myReleaseSlider);
 
-    myReleaseLabel.setFont(8.0f);
+    myReleaseLabel.setFont(fontSize);
     myReleaseLabel.setText("Release (s)", NotificationType::dontSendNotification);
     myReleaseLabel.setJustificationType(Justification::centredTop);
     myReleaseLabel.attachToComponent(&myReleaseSlider, false);
@@ -76,7 +78,8 @@ ADSRComponent::~ADSRComponent()
 
 void ADSRComponent::paint (juce::Graphics& g)
 {
-    g.fillAll(Colours::grey.darker());
+    g.setGradientFill(ColourGradient(Colours::grey.darker().darker(), 0, getHeight(), Colours::grey.darker(), 0, 0, false));
+    g.fillRect(0, 0, getWidth(), getHeight());
 }
 
 void ADSRComponent::resized()

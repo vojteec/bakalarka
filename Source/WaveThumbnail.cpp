@@ -16,7 +16,14 @@ WaveThumbnail::WaveThumbnail(SynthGrannyAudioProcessor& p) : audioProcessor (p)
 {
     // In your constructor, you should add any child components, and
     // initialise any special settings that your component needs.
+    Image loadButton = ImageCache::getFromMemory(BinaryData::buttonLoadToSampler_PNG, BinaryData::buttonLoadToSampler_PNGSize);
+    Image loadButtonDown = ImageCache::getFromMemory(BinaryData::buttonLoadToSamplerDown_PNG, BinaryData::buttonLoadToSamplerDown_PNGSize);
 
+    myLoadButton.setImages(true, true, true, loadButton, 1.0f, {}, loadButton, 1.0f, {}, loadButtonDown, 1.0f, {});
+    myLoadButton.onClick = [&]() { audioProcessor.loadFileViaButton();                                                                         //boolean, ktery rozhoduje, kdy se vykresli waveform je aktivovan
+    repaint(); };
+
+    addAndMakeVisible(myLoadButton);
 }
 
 WaveThumbnail::~WaveThumbnail()
@@ -32,13 +39,10 @@ void WaveThumbnail::paint (juce::Graphics& g)
     auto colourParametersTextBounds = getLocalBounds().reduced(10, 35);
     
     auto waveform = audioProcessor.getWave();
-
-    myLoadButton.onClick = [&]() { audioProcessor.loadFileViaButton();                                                                         //boolean, ktery rozhoduje, kdy se vykresli waveform je aktivovan
-    repaint(); };                                                                                                                              //spusti se proces vykreslovani
+                                                                                                                            //spusti se proces vykreslovani
     g.setFont(15.0f);
-    myLoadButton.setColour(TextButton::buttonColourId, Colours::silver);
-    myLoadButton.setColour(TextButton::textColourOffId, Colours::black);
-    addAndMakeVisible(myLoadButton);
+    /*myLoadButton.setColour(TextButton::buttonColourId, Colours::silver);
+    myLoadButton.setColour(TextButton::textColourOffId, Colours::black);*/
 
     if (waveform.getNumSamples() > 0)
     {
@@ -101,5 +105,5 @@ void WaveThumbnail::paint (juce::Graphics& g)
 
 void WaveThumbnail::resized()
 {
-    myLoadButton.setBoundsRelative(0.01f, 0.02f, 0.2f, 0.1f);
+    myLoadButton.setBoundsRelative(0.01f, 0.05f, 0.1f, 0.15f);
 }

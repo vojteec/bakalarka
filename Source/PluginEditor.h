@@ -35,9 +35,9 @@ public:
     void timerCallback() override;
 
 private:
-    TextButton myWebcamButton{ CharPointer_UTF8("Nastavit parametry dle dat z webkamery") };
-    TextButton myGranulisationButton{ "Nastavit parametry" };
-    TextButton myDegranulisationButton{ "Degranulizovat" };
+    ImageButton myWebcamButton/*{ CharPointer_UTF8("Nastavit parametry dle dat z webkamery") }*/;
+    ImageButton myGranulisationButton/*{ "Nastavit parametry" }*/;
+    ImageButton myDegranulisationButton/*{ "Degranulizovat" }*/;
 
     WaveThumbnail myWaveThumbnail;
     ADSRComponent myADSR;

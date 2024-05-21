@@ -24,7 +24,26 @@
       <FILE id="mNYu2G" name="GrainComponent.h" compile="0" resource="0"
             file="Source/GrainComponent.h"/>
     </GROUP>
-    <GROUP id="{D7C3E401-7F29-E7E5-3A02-AF0A6016534E}" name="Images&amp;Fonts"/>
+    <GROUP id="{D7C3E401-7F29-E7E5-3A02-AF0A6016534E}" name="Images&amp;Fonts">
+      <FILE id="IxVqG8" name="buttonDegranulize.PNG" compile="0" resource="1"
+            file="../../button/buttonDegranulize.PNG"/>
+      <FILE id="uOiLLv" name="buttonDegranulizeDown.PNG" compile="0" resource="1"
+            file="../../button/buttonDegranulizeDown.PNG"/>
+      <FILE id="PZET6W" name="buttonLoadToSampler.PNG" compile="0" resource="1"
+            file="../../button/buttonLoadToSampler.PNG"/>
+      <FILE id="hKWSqx" name="buttonLoadToSamplerDown.PNG" compile="0" resource="1"
+            file="../../button/buttonLoadToSamplerDown.PNG"/>
+      <FILE id="Yx8OHU" name="buttonSetParameters.PNG" compile="0" resource="1"
+            file="../../button/buttonSetParameters.PNG"/>
+      <FILE id="LRw40Y" name="buttonSetParametersDown.PNG" compile="0" resource="1"
+            file="../../button/buttonSetParametersDown.PNG"/>
+      <FILE id="Yrvgw8" name="buttonSetParametersHSL.PNG" compile="0" resource="1"
+            file="../../button/buttonSetParametersHSL.PNG"/>
+      <FILE id="zfqrfM" name="buttonSetParametersHSLDown.PNG" compile="0"
+            resource="1" file="../../button/buttonSetParametersHSLDown.PNG"/>
+      <FILE id="Qua8bA" name="rotarySlider.png" compile="0" resource="1"
+            file="../../rotarySlider.png"/>
+    </GROUP>
   </MAINGROUP>
   <MODULES>
     <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
