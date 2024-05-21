@@ -51,7 +51,7 @@ ADSRComponent::ADSRComponent(SynthGrannyAudioProcessor& p) : audioProcessor (p)
     addAndMakeVisible(mySustainSlider);
 
     mySustainLabel.setFont(fontSize);
-    mySustainLabel.setText("Sustain (%)", NotificationType::dontSendNotification);
+    mySustainLabel.setText("Sustain (-)", NotificationType::dontSendNotification);
     mySustainLabel.setJustificationType(Justification::centredTop);
     mySustainLabel.attachToComponent(&mySustainSlider, false);
 
