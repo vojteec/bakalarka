@@ -66,7 +66,7 @@ SynthGrannyAudioProcessorEditor::~SynthGrannyAudioProcessorEditor()             
 //==============================================================================
 void SynthGrannyAudioProcessorEditor::paint (juce::Graphics& g)
 {
-    g.setGradientFill(ColourGradient(Colours::grey.darker().darker().darker(), 0.0f, getHeight(), Colours::grey.darker(), getWidth(), 0, false));        //nastaveni barvy pozadi
+    g.setGradientFill(ColourGradient(Colours::grey.darker().darker().darker(), 0.0f, getHeight(), Colours::grey.darker(), 0, 0, false));        //nastaveni barvy pozadi
     g.fillRect(0, 0, getWidth(), getHeight());
     g.setColour(Colours::white);                                                                                                                //barva cary je nastavena na bilou
 

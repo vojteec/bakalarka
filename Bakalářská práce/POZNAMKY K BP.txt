@@ -4,3 +4,14 @@ Kapitola 2: sampler – jak funguje (pevná vs promìnlivá fvz, looping, oddìlení at
 
 Kapitoly 3.1 a 3.2 (Framework JUCE a Snímání barev by mohly být souèástí budoucí následující podkapitoly vlastního vývoje s názvem ???Použitý framework a vývojové prostøedí???)
 
+
+
+CO BY NÁSTROJ MOHL UMÌT VÍC?
+
+Multisampling
+
+Kontinuální snímání barev a aplikace na parametry gran. synt.
+
+Náhodný rozptyl kolem zadané hodnoty parametrù, aplikovatelné LFO a nìkteré základní filtry
+
+Možnost prùmìrování barev také z nahraného obrázku nebo kontinuální zmìna pomocí videa
