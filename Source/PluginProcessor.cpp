@@ -265,7 +265,7 @@ void SynthGrannyAudioProcessor::averagePixel(const Image& img)
     float averageSaturation = std::accumulate(pixelSaturation.begin(), pixelSaturation.end(), 0.0f) / pixelHue.size();
     float averageLightness = std::accumulate(pixelLightness.begin(), pixelLightness.end(), 0.0f) / pixelLightness.size();
 
-    this->averageHueRanged = 100 * std::abs(std::cos(50 * averageHue));
+    this->averageHueRanged = 100 * std::abs(std::cos(365 * averageHue));
     this->averageSaturationRanged = 100 * averageSaturation;
     this->averageLightnessRanged = 50 * averageLightness;
 
