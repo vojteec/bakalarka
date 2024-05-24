@@ -6,6 +6,24 @@ Kapitoly 3.1 a 3.2 (Framework JUCE a Snímání barev by mohly být souèástí budoucí
 
 
 
+
+STRUKTURA KAPITOLY REALIZACE NÁSTROJE
+
+Struktura nástroje
+
+GUI
+
+Režim sampler
+
+Režim granulární sampler
+
+Granulizace a parametry
+
+Ovládání pomocí barev
+
+
+
+
 CO BY NÁSTROJ MOHL UMÌT VÍC?
 
 Multisampling
@@ -15,3 +33,20 @@ Kontinuální snímání barev a aplikace na parametry gran. synt.
 Náhodný rozptyl kolem zadané hodnoty parametrù, aplikovatelné LFO a nìkteré základní filtry
 
 Možnost prùmìrování barev také z nahraného obrázku nebo kontinuální zmìna pomocí videa
+
+Možnost ukládání více zvukových souborù do vìtšího množství bufferù a následný výbìr
+
+Možnost výbìru zóny pro looping v obou režimech
+
+Problematika dodržení délky grainu na všech notách v sampleru (zpomalování a zrychlování nahrávky a tím zpùsobená zmìna délky na jiných notách než C5)
+
+Možnost nastavení i záporné hustoty (rozestupu grainù)
+
+
+
+
+ÈIŠTÌNÍ KÓDU
+
+Všechny poznámky a popisky
+
+Soubor PluginProcessor.cpp, metoda loadFileViaButton() – odstranit vytvoøení AudioBuffer<float> tempBuffer, je tam k nièemu

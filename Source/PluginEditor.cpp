@@ -42,9 +42,25 @@ SynthGrannyAudioProcessorEditor::SynthGrannyAudioProcessorEditor (SynthGrannyAud
     /*myDegranulisationButton.setColour(TextButton::buttonColourId, Colours::silver);
     myDegranulisationButton.setColour(TextButton::textColourOffId, Colours::black);*/
 
+    myRootNoteSlider.setSliderStyle(Slider::SliderStyle::RotaryVerticalDrag);
+    myRootNoteSlider.setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
+    myRootNoteSlider.setColour(Slider::ColourIds::thumbColourId, Colours::lightgreen);
+    myRootNoteSlider.setColour(Slider::ColourIds::textBoxTextColourId, Colours::white);
+    addAndMakeVisible(myRootNoteSlider);
+
+    myRootNoteLabel.setFont(16.0f);
+    myRootNoteLabel.setText(CharPointer_UTF8("MIDI Root nota"), NotificationType::dontSendNotification);
+    myRootNoteLabel.setColour(Label::textColourId, Colours::white);
+    myRootNoteLabel.setJustificationType(Justification::centredTop);
+    myRootNoteLabel.attachToComponent(&myRootNoteSlider, false);
+
+    myRootNoteAttachment = std::make_unique<AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getValTrSt(), "ROOT NOTE", myRootNoteSlider);
+
     addAndMakeVisible(myWebcamButton);
     addAndMakeVisible(myGranulisationButton);
     addAndMakeVisible(myDegranulisationButton);
+
+    addAndMakeVisible(myRootNoteSlider);
 
     addAndMakeVisible(myWaveThumbnail);
     addAndMakeVisible(myGrainComponent);
@@ -77,13 +93,15 @@ void SynthGrannyAudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
-    myWebcamButton.setBoundsRelative(0.15f, 0.53f, 0.08f, 0.08f);
-    myGranulisationButton.setBoundsRelative(0.05f, 0.53f, 0.08f, 0.08f);
-    myDegranulisationButton.setBoundsRelative(0.25f, 0.53f, 0.08f, 0.08f);
+    myWebcamButton.setBoundsRelative(0.15f, 0.585f, 0.08f, 0.08f);
+    myGranulisationButton.setBoundsRelative(0.05f, 0.585f, 0.08f, 0.08f);
+    myDegranulisationButton.setBoundsRelative(0.25f, 0.585f, 0.08f, 0.08f);
+
+    myRootNoteSlider.setBoundsRelative(0.35f, 0.55f, 0.1f, 0.1875);
 
     myWaveThumbnail.setBoundsRelative(0.05f, 0.05f, 0.9f, 0.45f);
-    myADSR.setBoundsRelative(0.5f, 0.65f, 0.5f, 0.25f);
-    myGrainComponent.setBoundsRelative(0.0f, 0.65f, 0.5f, 0.25f);
+    myADSR.setBoundsRelative(0.5f, 0.75f, 0.5f, 0.25f);
+    myGrainComponent.setBoundsRelative(0.0f, 0.75f, 0.5f, 0.25f);
 }
 
 bool SynthGrannyAudioProcessorEditor::isInterestedInFileDrag(const StringArray& files)                                                          //funkce, ktera overi, jestli zvoleny soubor je ve spravnem formatu

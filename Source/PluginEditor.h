@@ -39,6 +39,11 @@ private:
     ImageButton myGranulisationButton/*{ "Nastavit parametry" }*/;
     ImageButton myDegranulisationButton/*{ "Degranulizovat" }*/;
 
+    Slider myRootNoteSlider;
+    Label myRootNoteLabel;
+
+    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> myRootNoteAttachment;
+
     WaveThumbnail myWaveThumbnail;
     ADSRComponent myADSR;
     GrainComponent myGrainComponent;

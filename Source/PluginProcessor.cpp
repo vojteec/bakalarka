@@ -189,7 +189,9 @@ void SynthGrannyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
         }
     }
 
-    float pitchedSamples = buffer.getNumSamples() * (midiNoteInHertz / 523.25113);
+    int rootNote = myValTrSt.getRawParameterValue("ROOT NOTE")->load();
+    float rootNoteFrequency = 440.0f * std::powf(2.0f, ((rootNote - 69.0f) / 12.0f));
+    float pitchedSamples = buffer.getNumSamples() * (midiNoteInHertz / rootNoteFrequency);
     mySampleCount = myIsNotePlayed ? mySampleCount += pitchedSamples : 0;
 
     myGrannySynth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
@@ -505,7 +507,9 @@ void SynthGrannyAudioProcessor::granulisation()
 
     BigInteger range;
     range.setRange(0, 128, true);
-    myGrannySynth.addSound(new SamplerSound("Sample", *reader, range, 72, 0.1, 0.1, 2400.0));
+
+    int rootNote = myValTrSt.getRawParameterValue("ROOT NOTE")->load();
+    myGrannySynth.addSound(new SamplerSound("Sample", *reader, range, rootNote, 0.1, 0.1, 2400.0));
     updateADSR();
 
     //cisteni pameti
@@ -715,7 +719,9 @@ void SynthGrannyAudioProcessor::granulisationByColour(float averageHue, float av
 
         BigInteger range;
         range.setRange(0, 128, true);
-        myGrannySynth.addSound(new SamplerSound("Sample", *reader, range, 72, 0.1, 0.1, 2400.0));
+
+        int rootNote = myValTrSt.getRawParameterValue("ROOT NOTE")->load();
+        myGrannySynth.addSound(new SamplerSound("Sample", *reader, range, rootNote, 0.1, 0.1, 2400.0));
         updateADSR();
 
         //cisteni pameti
@@ -762,7 +768,8 @@ void SynthGrannyAudioProcessor::degranulize()
         BigInteger range;
         range.setRange(0, 128, true);
 
-        myGrannySynth.addSound(new SamplerSound("Sample", *myFormatReader, range, 72, 0.1, 0.1, 2400.0));
+        int rootNote = myValTrSt.getRawParameterValue("ROOT NOTE")->load();
+        myGrannySynth.addSound(new SamplerSound("Sample", *myFormatReader, range, rootNote, 0.1, 0.1, 2400.0));
 
         updateADSR();
     }
@@ -803,6 +810,8 @@ AudioProcessorValueTreeState::ParameterLayout SynthGrannyAudioProcessor::createP
     parameters.push_back(std::make_unique<AudioParameterFloat>("GRAIN DECAY", "Decay", 0.0f, 100.0f, 50.0f));
     parameters.push_back(std::make_unique<AudioParameterFloat>("GRAIN OVERLAP", "Overlap", 0.0f, 50.0f, 0.0f));
     parameters.push_back(std::make_unique<AudioParameterFloat>("GRAIN BALANCE", "Balance", -100.0f, 100.0f, 0.0f));
+
+    parameters.push_back(std::make_unique<AudioParameterInt>("ROOT NOTE", "Root", 0, 127, 72));
 
     return{ parameters.begin(), parameters.end() };
 }
