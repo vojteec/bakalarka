@@ -26,19 +26,19 @@ Ovládání pomocí barev
 
 CO BY NÁSTROJ MOHL UMÌT VÍC?
 
-Multisampling
+//Multisampling
 
-Kontinuální snímání barev a aplikace na parametry gran. synt.
+//Kontinuální snímání barev a aplikace na parametry gran. synt.
 
-Náhodný rozptyl kolem zadané hodnoty parametrù, aplikovatelné LFO a nìkteré základní filtry
+//Náhodný rozptyl kolem zadané hodnoty parametrù, aplikovatelné LFO a nìkteré základní filtry
 
-Možnost prùmìrování barev také z nahraného obrázku nebo kontinuální zmìna pomocí videa
+//Možnost prùmìrování barev také z nahraného obrázku nebo kontinuální zmìna pomocí videa
 
 Možnost ukládání více zvukových souborù do vìtšího množství bufferù a následný výbìr
 
 Možnost výbìru zóny pro looping v obou režimech
 
-Problematika dodržení délky grainu na všech notách v sampleru (zpomalování a zrychlování nahrávky a tím zpùsobená zmìna délky na jiných notách než C5)
+//Problematika dodržení délky grainu na všech notách v sampleru (zpomalování a zrychlování nahrávky a tím zpùsobená zmìna délky na jiných notách než Root Note)
 
 Možnost nastavení i záporné hustoty (rozestupu grainù)
 
