@@ -43,7 +43,8 @@ SynthGrannyAudioProcessorEditor::SynthGrannyAudioProcessorEditor (SynthGrannyAud
     myGranulisationButton.setColour(TextButton::textColourOffId, Colours::black);*/
 
     myDegranulisationButton.setImages(true, true, true, degranulisationButton, 1.0f, {}, degranulisationButton, 1.0f, {}, degranulisationButtonDown, 1.0f, {});
-    myDegranulisationButton.onClick = [&]() { audioProcessor.degranulize();
+    myDegranulisationButton.onClick = [&]() { audioProcessor.myParameterContinuous = false;
+    audioProcessor.degranulize();
     repaint(); };
     /*myDegranulisationButton.setColour(TextButton::buttonColourId, Colours::silver);
     myDegranulisationButton.setColour(TextButton::textColourOffId, Colours::black);*/

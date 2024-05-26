@@ -1,3 +1,18 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+CO DO PØÍLOHY?
+
+.vst3 a .exe verze souborù
+
+Uživatelský manuál
+
+Soubory .cpp a .h
+
+Testovací nahrávky
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
+
 CO PØIDAT DO TEORIE?
 
 //Kapitola 2: sampler – jak funguje (pevná vs promìnlivá fvz, looping, oddìlení attack, sustain a release fází samplù a jejich použití)
@@ -22,6 +37,8 @@ STRUKTURA KAPITOLY REALIZACE NÁSTROJE
 //Ovládání pomocí barev
 
 Proè nástroj oproti návrhu nemá možnost více instancí? -Lepší možností se ukázalo spustit více Standalone verzí spolu s více klaviaturami nebo použití DAW a více stop
+
+Zakomponovat také nejnovìji pøidané funkce (jednorázové vs. kontinuální sledování parametrù, rozsah pøijímaných MIDI not a zesílení)
 
 
 
