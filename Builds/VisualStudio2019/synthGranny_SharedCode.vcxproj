@@ -3370,6 +3370,10 @@
     <None Include="..\..\..\..\button\buttonSetParametersDown.PNG"/>
     <None Include="..\..\..\..\button\buttonSetParametersHSL.PNG"/>
     <None Include="..\..\..\..\button\buttonSetParametersHSLDown.PNG"/>
+    <None Include="..\..\..\..\button\buttonContinuousParamsDown.png"/>
+    <None Include="..\..\..\..\button\buttonOneShotParams.png"/>
+    <None Include="..\..\..\..\button\buttonOneShotParamsDown.png"/>
+    <None Include="..\..\..\..\button\buttonContinuousParams.png"/>
     <None Include="..\..\..\..\rotarySlider.png"/>
     <None Include="..\..\..\..\juce-7.0.7-windows\JUCE\modules\juce_audio_devices\native\oboe\CMakeLists.txt"/>
     <None Include="..\..\..\..\juce-7.0.7-windows\JUCE\modules\juce_audio_devices\native\oboe\README.md"/>

@@ -5951,6 +5951,18 @@
     <None Include="..\..\..\..\button\buttonSetParametersHSLDown.PNG">
       <Filter>synthGranny\Images&amp;Fonts</Filter>
     </None>
+    <None Include="..\..\..\..\button\buttonContinuousParamsDown.png">
+      <Filter>synthGranny\Images&amp;Fonts</Filter>
+    </None>
+    <None Include="..\..\..\..\button\buttonOneShotParams.png">
+      <Filter>synthGranny\Images&amp;Fonts</Filter>
+    </None>
+    <None Include="..\..\..\..\button\buttonOneShotParamsDown.png">
+      <Filter>synthGranny\Images&amp;Fonts</Filter>
+    </None>
+    <None Include="..\..\..\..\button\buttonContinuousParams.png">
+      <Filter>synthGranny\Images&amp;Fonts</Filter>
+    </None>
     <None Include="..\..\..\..\rotarySlider.png">
       <Filter>synthGranny\Images&amp;Fonts</Filter>
     </None>

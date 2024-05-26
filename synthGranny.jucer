@@ -41,6 +41,14 @@
             file="../../button/buttonSetParametersHSL.PNG"/>
       <FILE id="zfqrfM" name="buttonSetParametersHSLDown.PNG" compile="0"
             resource="1" file="../../button/buttonSetParametersHSLDown.PNG"/>
+      <FILE id="LtOa4V" name="buttonContinuousParamsDown.png" compile="0"
+            resource="1" file="../../button/buttonContinuousParamsDown.png"/>
+      <FILE id="aaIJzF" name="buttonOneShotParams.png" compile="0" resource="1"
+            file="../../button/buttonOneShotParams.png"/>
+      <FILE id="Zn0S2F" name="buttonOneShotParamsDown.png" compile="0" resource="1"
+            file="../../button/buttonOneShotParamsDown.png"/>
+      <FILE id="uk9x9G" name="buttonContinuousParams.png" compile="0" resource="1"
+            file="../../button/buttonContinuousParams.png"/>
       <FILE id="Qua8bA" name="rotarySlider.png" compile="0" resource="1"
             file="../../rotarySlider.png"/>
     </GROUP>

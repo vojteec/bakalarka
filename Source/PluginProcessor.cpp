@@ -165,10 +165,10 @@ void SynthGrannyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     if (myShouldUpdate)
     {
         updateADSR();
-        /*if (originalBuffer.getNumSamples() > 0)
+        if (originalBuffer.getNumSamples() > 0 && myParameterContinuous)
         {
             granulisation();
-        }*/
+        }
         myShouldUpdate = false;
     }
     
@@ -196,6 +196,34 @@ void SynthGrannyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
 
     myGrannySynth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
 
+    //APLIKACE PANORAMY
+    float balanceFromValTrSt = myValTrSt.getRawParameterValue("GRAIN BALANCE")->load();
+    float balance = balanceFromValTrSt / 100;
+
+    if (buffer.getNumChannels() < 2) //korekce pro mono stopy pro vytvoreni dvou identickych kanalu
+    {
+        buffer.setSize(2, buffer.getNumSamples(), 1);
+        for (int sample = 0; sample < buffer.getNumSamples(); sample++)
+        {
+            buffer.setSample(1, sample, buffer.getSample(0, sample));
+        }
+    }
+
+    if (buffer.getNumChannels() == 2) //pokud je input stereo, aplikuj balance
+    {
+        if (balance < 0)
+        {
+            buffer.applyGain(1, 0, buffer.getNumSamples(), 1.0f + balance);
+        }
+        if (balance > 0)
+        {
+            buffer.applyGain(0, 0, buffer.getNumSamples(), 1.0f - balance);
+        }
+    }
+
+    float gain = myValTrSt.getRawParameterValue("VOLUME")->load();
+
+    buffer.applyGain(gain);
     
     // This is the place where you'd normally do the guts of your plugin's
     // audio processing...
@@ -283,7 +311,6 @@ void SynthGrannyAudioProcessor::colourModifier()
 
 void SynthGrannyAudioProcessor::loadFileViaDragNDrop(const String& path)
 {
-    myGrannySynth.clearSounds();
 
     auto file = File(path);
     myFormatReader = myFormatManager.createReaderFor(file);
@@ -304,6 +331,8 @@ void SynthGrannyAudioProcessor::loadFileViaDragNDrop(const String& path)
 
 void SynthGrannyAudioProcessor::granulisation()
 {
+    myGrannySynth.clearSounds();
+
     if (originalBuffer.getNumSamples() == 0)
     {
         return;
@@ -463,31 +492,6 @@ void SynthGrannyAudioProcessor::granulisation()
 
     readWaveform(granulizedBuffer);
 
-    //APLIKACE PANORAMY
-    float balanceFromValTrSt = myValTrSt.getRawParameterValue("GRAIN BALANCE")->load();
-    float balance = balanceFromValTrSt / 100;
-
-    if (granulizedBuffer.getNumChannels() < 2) //korekce pro mono stopy pro vytvoreni dvou identickych kanalu
-    {
-        granulizedBuffer.setSize(2, granulizedBuffer.getNumSamples(), 1);
-        for (int sample = 0; sample < granulizedBuffer.getNumSamples(); sample++)
-        {
-            granulizedBuffer.setSample(1, sample, granulizedBuffer.getSample(0, sample));
-        }
-    }
-
-    if (granulizedBuffer.getNumChannels() == 2) //pokud je input stereo, aplikuj balance
-    {
-        if (balance < 0)
-        {
-            granulizedBuffer.applyGain(1, 0, granulizedBuffer.getNumSamples() - 2, 1.0f + balance);
-        }
-        if (balance > 0)
-        {
-            granulizedBuffer.applyGain(0, 0, granulizedBuffer.getNumSamples() - 2, 1.0f - balance);
-        }
-    }
-
     MemoryBlock memoryBlock;
     {
         WavAudioFormat wavFormat;
@@ -506,7 +510,23 @@ void SynthGrannyAudioProcessor::granulisation()
 
 
     BigInteger range;
-    range.setRange(0, 128, true);
+    int lowerLimit = myValTrSt.getRawParameterValue("ZONE LOWER LIMIT")->load();
+    int upperLimit = myValTrSt.getRawParameterValue("ZONE UPPER LIMIT")->load();
+
+    if (lowerLimit == upperLimit)
+    {
+        lowerLimit = upperLimit - 1;
+    }
+    if (upperLimit < lowerLimit)
+    {
+        std::swap(lowerLimit, upperLimit);
+    }
+    if (lowerLimit == upperLimit && lowerLimit == 0)
+    {
+        upperLimit = lowerLimit + 1;
+    }
+
+    range.setRange(lowerLimit, upperLimit - lowerLimit + 1, true);
 
     int rootNote = myValTrSt.getRawParameterValue("ROOT NOTE")->load();
     myGrannySynth.addSound(new SamplerSound("Sample", *reader, range, rootNote, 0.1, 0.1, 2400.0));
@@ -522,7 +542,7 @@ void SynthGrannyAudioProcessor::granulisationByColour(float averageHue, float av
 {
     if (originalBuffer.getNumSamples() > 0)
     {
-
+        myGrannySynth.clearSounds();
 
         float grainLengthInMs = averageHue;
         int grainSize = static_cast<int>((grainLengthInMs / 1000) * myFormatReader->sampleRate);
@@ -676,31 +696,6 @@ void SynthGrannyAudioProcessor::granulisationByColour(float averageHue, float av
 
         readWaveform(granulizedBuffer);
 
-        //APLIKACE PANORAMY
-        float balanceFromValTrSt = myValTrSt.getRawParameterValue("GRAIN BALANCE")->load();
-        float balance = balanceFromValTrSt / 100;
-
-        if (granulizedBuffer.getNumChannels() < 2) //korekce pro mono stopy pro vytvoreni dvou identickych kanalu
-        {
-            granulizedBuffer.setSize(2, granulizedBuffer.getNumSamples(), 1);
-            for (int sample = 0; sample < granulizedBuffer.getNumSamples(); sample++)
-            {
-                granulizedBuffer.setSample(1, sample, granulizedBuffer.getSample(0, sample));
-            }
-        }
-
-        if (granulizedBuffer.getNumChannels() == 2) //pokud je input stereo, aplikuj balance
-        {
-            if (balance < 0)
-            {
-                granulizedBuffer.applyGain(1, 0, granulizedBuffer.getNumSamples() - 2, 1.0f + balance);
-            }
-            if (balance > 0)
-            {
-                granulizedBuffer.applyGain(0, 0, granulizedBuffer.getNumSamples() - 2, 1.0f - balance);
-            }
-        }
-
         MemoryBlock memoryBlock;
         {
             WavAudioFormat wavFormat;
@@ -718,7 +713,23 @@ void SynthGrannyAudioProcessor::granulisationByColour(float averageHue, float av
         ////////////////////////
 
         BigInteger range;
-        range.setRange(0, 128, true);
+        int lowerLimit = myValTrSt.getRawParameterValue("ZONE LOWER LIMIT")->load();
+        int upperLimit = myValTrSt.getRawParameterValue("ZONE UPPER LIMIT")->load();
+
+        if (lowerLimit == upperLimit)
+        {
+            lowerLimit = upperLimit - 1;
+        }
+        if (upperLimit < lowerLimit)
+        {
+            std::swap(lowerLimit, upperLimit);
+        }
+        if (lowerLimit == upperLimit && lowerLimit == 0)
+        {
+            upperLimit = lowerLimit + 1;
+        }
+
+        range.setRange(lowerLimit, upperLimit - lowerLimit + 1, true);
 
         int rootNote = myValTrSt.getRawParameterValue("ROOT NOTE")->load();
         myGrannySynth.addSound(new SamplerSound("Sample", *reader, range, rootNote, 0.1, 0.1, 2400.0));
@@ -734,7 +745,7 @@ void SynthGrannyAudioProcessor::granulisationByColour(float averageHue, float av
 void SynthGrannyAudioProcessor::loadFileViaButton()
 {
     AudioBuffer<float> tempBuffer;
-    FileChooser chooser{ "Vyberte soubor", {}, "*.wav;*.mp3;*.flac;*.aiff;*.wma;*.ogg"};
+    FileChooser chooser{ "Vyberte soubor", {}, "*.wav;*.mp3;*.flac;*.aiff;*.aif;*.wma;*.ogg"};
     if (chooser.browseForFileToOpen())
     {
         auto file = chooser.getResult();
@@ -766,11 +777,26 @@ void SynthGrannyAudioProcessor::degranulize()
         readWaveform(originalBuffer);
 
         BigInteger range;
-        range.setRange(0, 128, true);
+        int lowerLimit = myValTrSt.getRawParameterValue("ZONE LOWER LIMIT")->load();
+        int upperLimit = myValTrSt.getRawParameterValue("ZONE UPPER LIMIT")->load();
+
+        if (lowerLimit == upperLimit)
+        {
+            lowerLimit = upperLimit - 1;
+        }
+        if (upperLimit < lowerLimit)
+        {
+            std::swap(lowerLimit, upperLimit);
+        }
+        if (lowerLimit == upperLimit && lowerLimit == 0)
+        {
+            upperLimit = lowerLimit + 1;
+        }
+
+        range.setRange(lowerLimit, upperLimit - lowerLimit + 1, true);
 
         int rootNote = myValTrSt.getRawParameterValue("ROOT NOTE")->load();
         myGrannySynth.addSound(new SamplerSound("Sample", *myFormatReader, range, rootNote, 0.1, 0.1, 2400.0));
-
         updateADSR();
     }
 }
@@ -812,6 +838,9 @@ AudioProcessorValueTreeState::ParameterLayout SynthGrannyAudioProcessor::createP
     parameters.push_back(std::make_unique<AudioParameterFloat>("GRAIN BALANCE", "Balance", -100.0f, 100.0f, 0.0f));
 
     parameters.push_back(std::make_unique<AudioParameterInt>("ROOT NOTE", "Root", 0, 127, 72));
+    parameters.push_back(std::make_unique<AudioParameterInt>("ZONE LOWER LIMIT", "Lower limit", 0, 127, 0));
+    parameters.push_back(std::make_unique<AudioParameterInt>("ZONE UPPER LIMIT", "Upper limit", 0, 127, 127));
+    parameters.push_back(std::make_unique<AudioParameterFloat>("VOLUME", "Volume", 0.0f, 1.5f, 1.0f));
 
     return{ parameters.begin(), parameters.end() };
 }

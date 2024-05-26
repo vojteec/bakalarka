@@ -86,6 +86,8 @@ public:
     float averageSaturationRanged = 50.0f;
     float averageLightnessRanged = 25.0f;
 
+    std::atomic<bool> myParameterContinuous{ false };
+
     //String averageHueString = String(averageHueRanged);
     //String averageSaturationString = String(averageSaturationRanged);
     //String averageLightnessString = std::to_string(averageLightnessRanged);

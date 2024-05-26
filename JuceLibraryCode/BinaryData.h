@@ -32,11 +32,23 @@ namespace BinaryData
     extern const char*   buttonSetParametersHSLDown_PNG;
     const int            buttonSetParametersHSLDown_PNGSize = 5604;
 
+    extern const char*   buttonContinuousParamsDown_png;
+    const int            buttonContinuousParamsDown_pngSize = 7591;
+
+    extern const char*   buttonOneShotParams_png;
+    const int            buttonOneShotParams_pngSize = 9962;
+
+    extern const char*   buttonOneShotParamsDown_png;
+    const int            buttonOneShotParamsDown_pngSize = 8511;
+
+    extern const char*   buttonContinuousParams_png;
+    const int            buttonContinuousParams_pngSize = 9681;
+
     extern const char*   rotarySlider_png;
     const int            rotarySlider_pngSize = 4914;
 
     // Number of elements in the namedResourceList and originalFileNames arrays.
-    const int namedResourceListSize = 9;
+    const int namedResourceListSize = 13;
 
     // Points to the start of a list of resource names.
     extern const char* namedResourceList[];

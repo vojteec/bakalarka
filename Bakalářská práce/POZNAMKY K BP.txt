@@ -1,6 +1,6 @@
 CO PØIDAT DO TEORIE?
 
-Kapitola 2: sampler – jak funguje (pevná vs promìnlivá fvz, looping, oddìlení attack, sustain a release fází samplù a jejich použití)
+//Kapitola 2: sampler – jak funguje (pevná vs promìnlivá fvz, looping, oddìlení attack, sustain a release fází samplù a jejich použití)
 
 Kapitoly 3.1 a 3.2 (Framework JUCE a Snímání barev by mohly být souèástí budoucí následující podkapitoly vlastního vývoje s názvem ???Použitý framework a vývojové prostøedí???)
 
@@ -9,17 +9,19 @@ Kapitoly 3.1 a 3.2 (Framework JUCE a Snímání barev by mohly být souèástí budoucí
 
 STRUKTURA KAPITOLY REALIZACE NÁSTROJE
 
-Struktura nástroje
+//Struktura nástroje
 
-GUI
+//GUI
 
-Režim sampler
+//Režim sampler
 
-Režim granulární sampler
+//Režim granulární sampler
 
-Granulizace a parametry
+//Granulizace a parametry
 
-Ovládání pomocí barev
+//Ovládání pomocí barev
+
+Proè nástroj oproti návrhu nemá možnost více instancí? -Lepší možností se ukázalo spustit více Standalone verzí spolu s více klaviaturami nebo použití DAW a více stop
 
 
 
@@ -50,3 +52,12 @@ Možnost nastavení i záporné hustoty (rozestupu grainù)
 Všechny poznámky a popisky
 
 Soubor PluginProcessor.cpp, metoda loadFileViaButton() – odstranit vytvoøení AudioBuffer<float> tempBuffer, je tam k nièemu
+
+
+
+
+URGENT
+
+2 ValueTreeState, jeden pro grain, druhy pro Balance, Root Note a ADSR. Prepinani tlacitkem mezi kontinualnim snimanim parametru a jednorazovym
+
+Nastaveni jedne zony syntezatoru, dva ovladace (spodni a horni hranice – osetrit 3 pripady: 1. spodni hranice je nizsi nez horni: to chceme; 2. spodni a horni hranice jsou shodne: return; 3. horni hranice je nizsi nez spodni – v takovem pripade prevest na pripad 1.).

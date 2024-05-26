@@ -38,11 +38,17 @@ private:
     ImageButton myWebcamButton/*{ CharPointer_UTF8("Nastavit parametry dle dat z webkamery") }*/;
     ImageButton myGranulisationButton/*{ "Nastavit parametry" }*/;
     ImageButton myDegranulisationButton/*{ "Degranulizovat" }*/;
+    ImageButton myContinuousParamsButton;
+    ImageButton myOneShotParamsButton;
 
-    Slider myRootNoteSlider;
-    Label myRootNoteLabel;
+    Slider myRootNoteSlider, myLowerLimitSlider, myUpperLimitSlider, myVolumeSlider;
+    Label myRootNoteLabel, myLowerLimitLabel, myUpperLimitLabel, myVolumeLabel;
 
     std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> myRootNoteAttachment;
+    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> myLowerLimitAttachment;
+    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> myUpperLimitAttachment;
+    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> myVolumeAttachment;
+
 
     WaveThumbnail myWaveThumbnail;
     ADSRComponent myADSR;
