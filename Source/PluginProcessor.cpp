@@ -162,16 +162,20 @@ void SynthGrannyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-    if (myShouldUpdate)
+    //DEFINICE CHOVANI PRI ZMENE PARAMETRU POMOCI OVLADACICH PRVKU
+
+    if (myShouldUpdate) //myShouldUpdate je true, pokud se zmeni nektery parametr z ovladacich prvku na panelu nastroje
     {
-        updateADSR();
-        if (originalBuffer.getNumSamples() > 0 && myParameterContinuous)
+        updateADSR(); //odeslani hodnot ADSR do juce::Sampler, ktery je dale zpracuje
+        if (originalBuffer.getNumSamples() > 0 && myParameterContinuous) //pokud bylo do originalniho bufferu neco nacteno a zaroven bylo vybrano kontinualni snimani parametru
         {
-            granulisation();
+            granulisation(); //proved novou granulizaci
         }
-        myShouldUpdate = false;
+        myShouldUpdate = false; //a necykluj se
     }
     
+    //NASTAVENI POHYBU UKAZATELE POZICE V SAMPLU
+
     MidiMessage message;
     MidiBuffer::Iterator iterator( midiMessages );
     int sample;
@@ -190,17 +194,18 @@ void SynthGrannyAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     }
 
     int rootNote = myValTrSt.getRawParameterValue("ROOT NOTE")->load();
-    float rootNoteFrequency = 440.0f * std::powf(2.0f, ((rootNote - 69.0f) / 12.0f));
+    float rootNoteFrequency = 440.0f * std::powf(2.0f, ((rootNote - 69.0f) / 12.0f)); //prizpusobeni rychlosti pohybu podle MIDI Root Note
     float pitchedSamples = buffer.getNumSamples() * (midiNoteInHertz / rootNoteFrequency);
     mySampleCount = myIsNotePlayed ? mySampleCount += pitchedSamples : 0;
 
     myGrannySynth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
 
     //APLIKACE PANORAMY
+
     float balanceFromValTrSt = myValTrSt.getRawParameterValue("GRAIN BALANCE")->load();
     float balance = balanceFromValTrSt / 100;
 
-    if (buffer.getNumChannels() < 2) //korekce pro mono stopy pro vytvoreni dvou identickych kanalu
+    if (buffer.getNumChannels() < 2) //korekce pro mono stopy pro vytvoreni 2-channel mono
     {
         buffer.setSize(2, buffer.getNumSamples(), 1);
         for (int sample = 0; sample < buffer.getNumSamples(); sample++)
@@ -273,7 +278,7 @@ void SynthGrannyAudioProcessor::averagePixel(const Image& img)
     std::vector<float> pixelSaturation;
     std::vector<float> pixelLightness;
 
-    //procházíme pixel po pixelu a ukládáme Colour
+    //prochazime pixel po pixelu cely snimek a ukladame Colour
     for (int row = 0; row < img.getHeight(); row++)
     {
         for (int pixel = 0; pixel < img.getWidth(); pixel++)
@@ -282,7 +287,7 @@ void SynthGrannyAudioProcessor::averagePixel(const Image& img)
         }
     }
 
-    //procházíme jednotlivé Colours a třídíme parametry do vektorů
+    //prochazime jednotlive Colours a tridime parametry do vektoru
     for (int pixel = 0; pixel < pixelColours.size(); pixel++)
     {
         pixelHue.push_back(pixelColours[pixel].getHue());
@@ -290,12 +295,13 @@ void SynthGrannyAudioProcessor::averagePixel(const Image& img)
         pixelLightness.push_back(pixelColours[pixel].getLightness());
     }
 
-    //hledáme průměrnou hodnotu Hue, Saturation a Lightness
+    //hledame prumernou hodnotu Hue, Saturation a Lightness
     float averageHue = std::accumulate(pixelHue.begin(), pixelHue.end(), 0.0f) / pixelHue.size();
     float averageSaturation = std::accumulate(pixelSaturation.begin(), pixelSaturation.end(), 0.0f) / pixelHue.size();
     float averageLightness = std::accumulate(pixelLightness.begin(), pixelLightness.end(), 0.0f) / pixelLightness.size();
 
-    this->averageHueRanged = 100 * std::abs(std::cos(365 * averageHue));
+    //uprava rozsahu parametru pro pouziti na parametry granulizace
+    this->averageHueRanged = 100 * std::abs(std::cos(365 * averageHue * (3.141592653589793f / 180.0f)));
     this->averageSaturationRanged = 100 * averageSaturation;
     this->averageLightnessRanged = 50 * averageLightness;
 
@@ -311,12 +317,11 @@ void SynthGrannyAudioProcessor::colourModifier()
 
 void SynthGrannyAudioProcessor::loadFileViaDragNDrop(const String& path)
 {
-
     auto file = File(path);
     myFormatReader = myFormatManager.createReaderFor(file);
 
     ////////////////////////////////////////////////////////
-    originalBuffer.setSize(myFormatReader->numChannels, myFormatReader->lengthInSamples);
+    originalBuffer.setSize(myFormatReader->numChannels, myFormatReader->lengthInSamples); //technicky je v soucasnem stavu pouziti originalBufferu zcela zbytecne, ale budouci prace by mohla zahrnovat vice bufferu obsahujicich ruzne samply, tak jako tomu muze byt treba v Ribs
     myFormatReader->read(&originalBuffer, 0, myFormatReader->lengthInSamples, 0, true, true);
 
     if (originalBuffer.getNumSamples() > 0)
@@ -325,49 +330,58 @@ void SynthGrannyAudioProcessor::loadFileViaDragNDrop(const String& path)
     }
     else
     {
-        return;
+        return; //toto melo zabranit nahrani souboru s neplatnou priponou (napriklad pokud se soubor bude jmenovat Sample.wav.jpg), ale funguje to tak nejak humpolacky
     }
 }
 
 void SynthGrannyAudioProcessor::granulisation()
 {
-    myGrannySynth.clearSounds();
+    myGrannySynth.clearSounds(); //smaz zvuky, ktere jiz v sampleru jsou
 
     if (originalBuffer.getNumSamples() == 0)
     {
-        return;
+        return; //prazdny buffer nebudeme granulizovat
     }
 
-    /////prepocet velikosti grainu z ms na pocet vzorku
+    //PREPOCET DELKY GRAINU Z ms NA VZORKY
+
     float grainLengthInMs = myValTrSt.getRawParameterValue("GRAIN LENGTH")->load();
     int grainSize = static_cast<int>((grainLengthInMs / 1000) * myFormatReader->sampleRate);
 
+    //PREPOCET VELIKOSTI PREKRYTI Z PROCENT NA VZORKY
+
     float overlapInPercent = myValTrSt.getRawParameterValue("GRAIN OVERLAP")->load();
     int overlapInSamples = static_cast<int>((grainSize / 100) * overlapInPercent);
+
+    //POKUD BY BYLA DELKA GRAINU VETSI NEZ DELKA SAMPLU
 
     if (grainSize > originalBuffer.getNumSamples())
     {
         grainSize = originalBuffer.getNumSamples();
     }
 
-    int numChannels = originalBuffer.getNumChannels();
+    //PRO ZKRACENI KODU SI DEFINUJEME POCET KANALU A POCET GRAINU
 
+    int numChannels = originalBuffer.getNumChannels();
     int numGrains = static_cast<int>(originalBuffer.getNumSamples() / grainSize) + 1;
 
     AudioBuffer<float> myGrain;
     AudioBuffer<float> tempBuffer;
     std::vector<int> tempIdxs;
 
+    //NAPLNENI VEKTORU INDEXU GRAINU
+
     for (int i = 0; i < numGrains; i++)
     {
         tempIdxs.push_back(i);
     }
 
-    /////nastaveni velikosti
+    //NASTAVENI VELIKOSTI BUFFERU
+
     myGrain.setSize(numChannels, grainSize);
     tempBuffer.setSize(numChannels, numGrains * grainSize);
 
-    /////nastaveni AD obalky pro grain
+    //PREPOCET PARAMETRU GRAIN AD OBALKY Z PROCENT NA VZORKY
 
     float attackInPercent = myValTrSt.getRawParameterValue("GRAIN ATTACK")->load();
     float decayInPercent = myValTrSt.getRawParameterValue("GRAIN DECAY")->load();
@@ -376,13 +390,13 @@ void SynthGrannyAudioProcessor::granulisation()
 
     int decayStartIdx = grainSize - decayInSamples;
 
-    /////cyklus prochazeni a granulizace originalniho bufferu
+    //BEREME VZORKY, TVORIME GRAINY A PRESKLADAVAME
 
     int grainIdx = 0;
     for (int sample = 0; sample < (numGrains - 1) * grainSize; sample++)
     {
 
-        /////nacteni stereo samplu do transportniho bufferu o velikosti grainu
+        //PLNENI GRAINU VZORKY
 
         for (int channel = 0; channel < numChannels; channel++)
         {
@@ -390,15 +404,20 @@ void SynthGrannyAudioProcessor::granulisation()
         }
         if (grainIdx == grainSize - 1) //pokud je grain plny
         {
-            /// vyber nahodneho indexu a nacteni do noveho bufferu
+            //VYBER NAHODNY INDEX A ODSTRAN HO Z VEKTORU
+
             int removeIdx = rand() % size(tempIdxs);
             int idx = tempIdxs[removeIdx];
             tempIdxs.erase(tempIdxs.begin() + removeIdx);
             for (int channel = 0; channel < numChannels; channel++)
             {
-                /// aplikace AD obalky
+                //APLIKUJ GRAIN AD OBALKU
+
                 myGrain.applyGainRamp(0, attackInSamples, 0.0f, 1.0f);
                 myGrain.applyGainRamp(decayStartIdx, decayInSamples, 1.0f, 0.0f);
+
+                //ULOZ DO PRECHODNEHO BUFFERU
+
                 for (int i = 0; i < grainSize; i++)
                 {
                     tempBuffer.setSample(channel, idx * grainSize + i, myGrain.getSample(channel, i));
@@ -412,9 +431,9 @@ void SynthGrannyAudioProcessor::granulisation()
             grainIdx++;
         }
     }
-    //sekce pro doplneni zbytku samplu, ktere prebyvaji a nezaplni cely grain
 
-    int diff = grainSize - grainIdx;
+    //PRAVDEPODOBNE NAM ZBYLY NEJAKE VZORKY, KTERE JIZ NEVYTVORI CELY GRAIN, POJDME SI JE TAKY VZIT
+
     int lastGrainStartIdx = tempIdxs[0] * grainSize;
 
     for (int channel = 0; channel < numChannels; channel++)
@@ -426,12 +445,15 @@ void SynthGrannyAudioProcessor::granulisation()
         int numMovedSamples = tempBuffer.getNumSamples() - lastGrainStartIdx - grainIdx;
     }
 
-    /////////////////////////PREKRYTI
+    //Z PRECHODNEHO BUFFERU BUDEME KOPIROVAT DO GRANULIZOVANEHO BUFFERU S PREKRYTIM
 
     AudioBuffer<float> granulizedBuffer;
     granulizedBuffer.setSize(tempBuffer.getNumChannels(), numGrains * grainSize - (numGrains - 1) * overlapInSamples);
     
+    //URCEME SI VZORKY, KTERE PREKRYTIM NEJSOU ZASAZENY
+
     int notOverlappedSamples = grainSize - 2 * overlapInSamples;
+
     for (int channel = 0; channel < granulizedBuffer.getNumChannels(); channel++)
     {
         int granulizedBufferSampleIdx = 0;
@@ -442,21 +464,22 @@ void SynthGrannyAudioProcessor::granulisation()
             {
                 if (grainNumber == 0) //prvni grain (nechceme prekryti na zacatku)
                 {
-                    if (sampleInGrainIdx < grainSize - overlapInSamples) //vsechny grainy do prekryti, pouze je prepis tak jak jsou
+                    if (sampleInGrainIdx < grainSize - overlapInSamples) //vsechny grainy do prekryti pouze prepis tak jak jsou
                     {
                         granulizedBuffer.setSample(channel, granulizedBufferSampleIdx, tempBuffer.getSample(channel, grainNumber * grainSize + sampleInGrainIdx));
                         granulizedBufferSampleIdx++;
                         continue;
                     }
-                    //vzorky zasazene prekrytim se prumeruji se zacatkem dalsiho grainu
+
+                    //VZORKY KONCE GRAINU SE PRUMERUJI SE VZORKY ZACATKU DALSIHO GRAINU
+                    
                     float average = (tempBuffer.getSample(channel, grainNumber * grainSize + sampleInGrainIdx) + tempBuffer.getSample(channel, (grainNumber + 1) * grainSize + sampleInGrainIdx - overlapInSamples - notOverlappedSamples)) / 2;
                     //float addition = tempBuffer.getSample(channel, grainNumber * grainSize + sampleInGrainIdx) + tempBuffer.getSample(channel, (grainNumber + 1) * grainSize + sampleInGrainIdx - overlapInSamples - notOverlappedSamples);
-                    //a zapisuji
                     granulizedBuffer.setSample(channel, granulizedBufferSampleIdx, average);
                     granulizedBufferSampleIdx++;
                     continue;
                 }
-                if (grainNumber == numGrains - 1) //zde zpracovavame posledni grain 
+                if (grainNumber == numGrains - 1) //posledni grain (nechceme prekryti na konci)
                 {
                     if (sampleInGrainIdx < overlapInSamples) //prekryti ze zacatku preskakujeme, protoze uz bylo vyreseno v predposlednim grainu
                     {
@@ -470,7 +493,7 @@ void SynthGrannyAudioProcessor::granulisation()
                     }
                 }
                 //grain, ktery neni prvni nebo posledni
-                if (sampleInGrainIdx < overlapInSamples) //preskakujeme zacatek grainu, uz je vyreseny
+                if (sampleInGrainIdx < overlapInSamples) //preskakujeme zacatek grainu, uz je vyreseny minulym grainem
                 {
                     continue;
                 }
@@ -480,10 +503,11 @@ void SynthGrannyAudioProcessor::granulisation()
                     granulizedBufferSampleIdx++;
                     continue;
                 }
-                //pro prekryti na konci zase udelame prumer poslednich vzorku n-teho grainu a prvnich vzorku n+1 grainu
+
+                //PRO PREKRYTI NA KONCI ZASE UDELAME PRUMER POSLEDNICH VZORKU N-TEHO GRAINU A PRVNICH VZORKU N+1 GRAINU
+
                 float average = (tempBuffer.getSample(channel, grainNumber * grainSize + sampleInGrainIdx) + tempBuffer.getSample(channel, (grainNumber + 1) * grainSize + sampleInGrainIdx - overlapInSamples - notOverlappedSamples)) / 2;
                 //float addition = tempBuffer.getSample(channel, grainNumber * grainSize + sampleInGrainIdx) + tempBuffer.getSample(channel, (grainNumber + 1) * grainSize + sampleInGrainIdx - overlapInSamples - notOverlappedSamples);
-
                 granulizedBuffer.setSample(channel, granulizedBufferSampleIdx, average);
                 granulizedBufferSampleIdx++;
             }
@@ -491,6 +515,8 @@ void SynthGrannyAudioProcessor::granulisation()
     }
 
     readWaveform(granulizedBuffer);
+
+    //MUSIME SI TO ZASE ZAPSAT DO SOUBORU, PROTOZE FORMAT READER BUFFERY NECTE
 
     MemoryBlock memoryBlock;
     {
@@ -507,7 +533,6 @@ void SynthGrannyAudioProcessor::granulisation()
     std::unique_ptr<AudioFormatReader> reader(wavFormat.createReaderFor(new MemoryInputStream(memoryBlock, false), true));
 
     ////////////////////////
-
 
     BigInteger range;
     int lowerLimit = myValTrSt.getRawParameterValue("ZONE LOWER LIMIT")->load();
@@ -744,18 +769,10 @@ void SynthGrannyAudioProcessor::granulisationByColour(float averageHue, float av
 
 void SynthGrannyAudioProcessor::loadFileViaButton()
 {
-    AudioBuffer<float> tempBuffer;
     FileChooser chooser{ "Vyberte soubor", {}, "*.wav;*.mp3;*.flac;*.aiff;*.aif;*.wma;*.ogg"};
     if (chooser.browseForFileToOpen())
     {
         auto file = chooser.getResult();
-
-        //NOT WORKING    NOT WORKING    NOT WORKING    NOT WORKING    NOT WORKING (yet)
-        /*
-        auto myFile = std::make_unique<File>(file);
-        myWaveThumbnail.myFileName = myFile->getFileName();
-        */
-
         myFormatReader = myFormatManager.createReaderFor(file);
     }
     else

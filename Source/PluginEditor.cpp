@@ -10,7 +10,7 @@
 #include "PluginEditor.h"
 
 //==============================================================================
-SynthGrannyAudioProcessorEditor::SynthGrannyAudioProcessorEditor (SynthGrannyAudioProcessor& p)                                                 //konstruktor editoru
+SynthGrannyAudioProcessorEditor::SynthGrannyAudioProcessorEditor (SynthGrannyAudioProcessor& p)
     : AudioProcessorEditor (&p), myWaveThumbnail (p), myADSR(p), myGrainComponent(p), audioProcessor (p) 
 {
     Image webcamButton = ImageCache::getFromMemory(BinaryData::buttonSetParametersHSL_PNG, BinaryData::buttonSetParametersHSL_PNGSize);
@@ -31,23 +31,17 @@ SynthGrannyAudioProcessorEditor::SynthGrannyAudioProcessorEditor (SynthGrannyAud
     startTimerHz(30);
 
     myWebcamButton.setImages(true, true, true, webcamButton, 1.0f, {}, webcamButton, 1.0f, {}, webcamButtonDown, 1.0f, {});
-    myWebcamButton.onClick = [&]() { audioProcessor.colourModifier();                                                                         //boolean, ktery rozhoduje, kdy se vykresli waveform je aktivovan
-    repaint(); };                                                                                                                              //spusti se proces vykreslovani
-    /*myWebcamButton.setColour(TextButton::buttonColourId, Colours::silver);
-    myWebcamButton.setColour(TextButton::textColourOffId, Colours::black);*/
+    myWebcamButton.onClick = [&]() { audioProcessor.colourModifier();
+    repaint(); };
 
     myGranulisationButton.setImages(true, true, true, granulisationButton, 1.0f, {}, granulisationButton, 1.0f, {}, granulistaionButtonDown, 1.0f, {});
     myGranulisationButton.onClick = [&]() { audioProcessor.granulisation();
     repaint(); };
-    /*myGranulisationButton.setColour(TextButton::buttonColourId, Colours::silver);
-    myGranulisationButton.setColour(TextButton::textColourOffId, Colours::black);*/
 
     myDegranulisationButton.setImages(true, true, true, degranulisationButton, 1.0f, {}, degranulisationButton, 1.0f, {}, degranulisationButtonDown, 1.0f, {});
     myDegranulisationButton.onClick = [&]() { audioProcessor.myParameterContinuous = false;
     audioProcessor.degranulize();
     repaint(); };
-    /*myDegranulisationButton.setColour(TextButton::buttonColourId, Colours::silver);
-    myDegranulisationButton.setColour(TextButton::textColourOffId, Colours::black);*/
 
     myContinuousParamsButton.setImages(true, true, true, continuousParamsButton, 1.0f, {}, continuousParamsButton, 1.0f, {}, continuousParamsButtonDown, 1.0f, {});
     myContinuousParamsButton.onClick = [&]() { audioProcessor.myParameterContinuous = true;
@@ -138,7 +132,7 @@ SynthGrannyAudioProcessorEditor::SynthGrannyAudioProcessorEditor (SynthGrannyAud
 }
 
 
-SynthGrannyAudioProcessorEditor::~SynthGrannyAudioProcessorEditor()                                                                             //destruktor editoru
+SynthGrannyAudioProcessorEditor::~SynthGrannyAudioProcessorEditor()
 {
     stopTimer();
 }
@@ -146,11 +140,11 @@ SynthGrannyAudioProcessorEditor::~SynthGrannyAudioProcessorEditor()             
 //==============================================================================
 void SynthGrannyAudioProcessorEditor::paint (juce::Graphics& g)
 {
-    g.setGradientFill(ColourGradient(Colours::grey.darker().darker().darker(), 0.0f, getHeight(), Colours::grey.darker(), 0, 0, false));        //nastaveni barvy pozadi
+    g.setGradientFill(ColourGradient(Colours::grey.darker().darker().darker(), 0.0f, getHeight(), Colours::grey.darker(), 0, 0, false));
     g.fillRect(0, 0, getWidth(), getHeight());
-    g.setColour(Colours::white);                                                                                                                //barva cary je nastavena na bilou
+    g.setColour(Colours::white);
 
-    g.setFont(15.0f);                                                                                                                           //nastaveni velikosti fontu
+    g.setFont(15.0f);
 }
 
 void SynthGrannyAudioProcessorEditor::resized()
@@ -173,8 +167,10 @@ void SynthGrannyAudioProcessorEditor::resized()
     myGrainComponent.setBoundsRelative(0.0f, 0.75f, 0.5f, 0.25f);
 }
 
-bool SynthGrannyAudioProcessorEditor::isInterestedInFileDrag(const StringArray& files)                                                          //funkce, ktera overi, jestli zvoleny soubor je ve spravnem formatu
+bool SynthGrannyAudioProcessorEditor::isInterestedInFileDrag(const StringArray& files)
 {
+    //KONTROLA, JESTLI SE V NAZVU SOUBORU OBJEVUJE RETEZEC SE SPRAVNOU PRIPONOU (BOHUZEL TO NERESI ZAMERNY UTOK, KDYZ SI SOUBOR POJMENUJU TREBA Sample.wav.jpg)
+
     for (auto file : files)
     {
         if (file.contains(".wav") || file.contains(".WAV") || file.contains(".aiff") || file.contains(".AIFF") || file.contains(".aif") || file.contains(".AIF") || file.contains(".flac") || file.contains(".FLAC") || file.contains(".wma") || file.contains(".WMA") || file.contains(".ogg") || file.contains(".OGG") || file.contains(".mp3") || file.contains(".MP3"))
@@ -185,8 +181,10 @@ bool SynthGrannyAudioProcessorEditor::isInterestedInFileDrag(const StringArray& 
     return false;
 }
 
-void SynthGrannyAudioProcessorEditor::filesDropped(const StringArray& files, int x, int y)                                                      //co se stane po umisteni souboru do vkladaciho pole
+void SynthGrannyAudioProcessorEditor::filesDropped(const StringArray& files, int x, int y)
 {
+    //KDYZ DROPPNE SOUBOR, PRECTI JMENO, ZOBRAZ JEJ A POSUN SOUBOR NA GRANULIZACI
+
     for (auto file : files)
     {
         if (isInterestedInFileDrag(file))

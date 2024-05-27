@@ -66,7 +66,7 @@ Možnost nastavení i záporné hustoty (rozestupu grainù)
 
 ÈIŠTÌNÍ KÓDU
 
-Všechny poznámky a popisky
+Všechny poznámky a popisky (X) je lepsi je tam mit, kdyby se do toho nekdo chtel podivat
 
 Soubor PluginProcessor.cpp, metoda loadFileViaButton() – odstranit vytvoøení AudioBuffer<float> tempBuffer, je tam k nièemu
 
